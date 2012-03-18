@@ -62,6 +62,7 @@ CREATE TABLE `paypal_info`
 	`don_id` INTEGER,
 	`item_name` VARCHAR(255),
 	`item_number` VARCHAR(255),
+	`reference` VARCHAR(255),
 	PRIMARY KEY (`id`),
 	INDEX `FI__don_paypal_info` (`don_id`),
 	INDEX `FI__donateur_paypal_info` (`donateur_id`),

@@ -40,6 +40,7 @@
     <column name="don_id" type="INTEGER"/>
     <column name="item_name" type="VARCHAR" size="255"/>
     <column name="item_number" type="VARCHAR" size="255"/>
+    <column name="reference" type="VARCHAR" size="255"/>
     <foreign-key foreignTable="don" name="Rel_don_paypal_info" onDelete="cascade">
       <reference local="don_id" foreign="id"/>
     </foreign-key>

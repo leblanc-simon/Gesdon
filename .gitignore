@@ -5,3 +5,6 @@ config/classmap-Gesdon-conf.php
 lib/model/classes/Gesdon/Database/map
 lib/model/classes/Gesdon/Database/om
 data/recurrents.csv
+data/paypal.csv
+data/cheques.csv
+log/*
