@@ -1,0 +1,4 @@
+deny from all
+<Directory www/>
+  allow from all
+</Directory>

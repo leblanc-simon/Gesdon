@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="gesdon" namespace="Gesdon\Database">
+  <table name="donateur">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="nom" type="VARCHAR" size="255"/>
+    <column name="prenom" type="VARCHAR" size="255"/>
+    <column name="email" type="VARCHAR" size="255"/>
+    <column name="rue" type="LONGVARCHAR"/>
+    <column name="cp" type="VARCHAR" size="20"/>
+    <column name="ville" type="VARCHAR" size="255"/>
+    <column name="pays" type="VARCHAR" size="255"/>
+    <column name="commentaire" type="LONGVARCHAR"/>
+    <column name="ident_paiement" type="VARCHAR" size="255"/>
+    <column name="total" type="DOUBLE"/>
+    <column name="date_creation" type="TIMESTAMP"/>
+    <column name="type_donateur" type="VARCHAR" size="255"/>
+    <index name="donateur_ident_paiement">
+      <index-column name="ident_paiement"/>
+    </index>
+  </table>
+  <table name="don">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="ident_paiement" type="VARCHAR" size="255"/>
+    <column name="montant" type="DOUBLE"/>
+    <column name="date_paiement" type="TIMESTAMP"/>
+    <column name="via" type="VARCHAR" size="255"/>
+    <column name="moyen_paiement" type="VARCHAR" size="255"/>
+    <column name="statut_paiement" type="VARCHAR" size="255"/>
+    <column name="frais" type="DOUBLE"/>
+    <index name="don_ident_paiement">
+      <index-column name="ident_paiement"/>
+    </index>
+    <index name="don_date_paiement">
+      <index-column name="date_paiement"/>
+    </index>
+  </table>
+  <table name="paypal_info">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="donateur_id" type="INTEGER"/>
+    <column name="don_id" type="INTEGER"/>
+    <column name="item_name" type="VARCHAR" size="255"/>
+    <column name="item_number" type="VARCHAR" size="255"/>
+    <foreign-key foreignTable="don" name="Rel_don_paypal_info" onDelete="cascade">
+      <reference local="don_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="donateur" name="Rel_donateur_paypal_info" onDelete="cascade">
+      <reference local="donateur_id" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="cmcic_info">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="donateur_id" type="INTEGER"/>
+    <column name="don_id" type="INTEGER"/>
+    <column name="cvx" type="VARCHAR" size="255"/>
+    <column name="validite_carte" type="VARCHAR" size="4"/>
+    <column name="brand" type="VARCHAR" size="255"/>
+    <column name="status3ds" type="VARCHAR" size="255"/>
+    <column name="motif_refus" type="VARCHAR" size="255"/>
+    <column name="recouvrement" type="BOOLEAN"/>
+    <column name="lib_recouvrement" type="VARCHAR" size="255"/>
+    <column name="annulation" type="BOOLEAN"/>
+    <column name="lib_annulation" type="VARCHAR" size="255"/>
+    <column name="date_annulation" type="TIMESTAMP"/>
+    <foreign-key foreignTable="don" name="Rel_don_cmcic_info" onDelete="cascade">
+      <reference local="don_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="donateur" name="Rel_donateur_cmcic_info" onDelete="cascade">
+      <reference local="donateur_id" foreign="id"/>
+    </foreign-key>
+  </table>
+</database>
