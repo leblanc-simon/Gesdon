@@ -16,6 +16,13 @@ use Gesdon\Database\om\BaseDonPeer;
  *
  * @package    propel.generator.Gesdon.Database
  */
-class DonPeer extends BaseDonPeer {
-
+class DonPeer extends BaseDonPeer
+{
+  const CARTE_BANCAIRE  = 'Carte bancaire';
+  const CHEQUE          = 'Chèque';
+  const VIREMENT        = 'Virement';
+  const ESPECE          = 'Espèce';
+  
+  const STATUT_OK       = 'ok';
+  const STATUT_NOK      = 'nok';
 } // DonPeer

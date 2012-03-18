@@ -16,6 +16,10 @@ use Gesdon\Database\om\BaseDonateurPeer;
  *
  * @package    propel.generator.Gesdon.Database
  */
-class DonateurPeer extends BaseDonateurPeer {
-
+class DonateurPeer extends BaseDonateurPeer
+{
+  const PARTICULIER   = 'Personnel';
+  const PROFESSIONNEL = 'Entreprise';
+  const INCONNU       = 'undefined';
+  
 } // DonateurPeer

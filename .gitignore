@@ -4,3 +4,4 @@ config/Gesdon-conf.php
 config/classmap-Gesdon-conf.php
 lib/model/classes/Gesdon/Database/map
 lib/model/classes/Gesdon/Database/om
+data/recurrents.csv
