@@ -73,6 +73,7 @@ class Migrate extends BaseTask
         $fields = array(
           'nom' => 'setNom',
           'prenom' => 'setPrenom',
+          'mail' => 'setEmail',
           'adresse1' => 'setRue',
           'cp' => 'setCp',
           'ville' => 'setVille',
@@ -218,6 +219,7 @@ class Migrate extends BaseTask
         $this->getConnection()->beginTransaction();
         
         $montant = \Gesdon\Utils\Currency::convertCurrency(trim($datas[8]));
+        $frais = \Gesdon\Utils\Currency::convertCurrency(trim($datas[9]));
         $date = preg_replace('/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})/', '\3-\2-\1', trim($datas[0]));
         $nom = trim($datas[3]);
         $ident_paiement = trim($datas[14]);
@@ -261,7 +263,7 @@ class Migrate extends BaseTask
         $don->setMoyenPaiement(DonPeer::CARTE_BANCAIRE);
         $don->setStatutPaiement(DonPeer::STATUT_OK);
         $don->setDatePaiement($date);
-        $don->setFrais(0);
+        $don->setFrais(($frais < 0) ? $frais * -1 : $frais);
         $don->save();
         
         // Création des infos supplémentaires
