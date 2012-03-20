@@ -13,7 +13,8 @@ try {
   
   $task = $argv[1];
   $args = $argv;
-  unset($args[0], $args[1]); // 0 : nom du script, 1: nom de la tâche
+  array_shift($args); // 0 : nom du script
+  array_shift($args); // 1: nom de la tâche
   
   $res = \Gesdon\Core\App::runTask($task, $args);
   echo $res."\n";
