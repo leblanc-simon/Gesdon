@@ -19,8 +19,8 @@ class Vendor
    */
   static public function autoloader($class)
   {
-    if ($class === '\\FPDF') {
-      require_once Config::get('vendor_dir').DIRECTORY_SEPARATOR.'fpdf.php';
+    if ($class === 'FPDF') {
+      require_once Config::get('vendor_dir').DIRECTORY_SEPARATOR.'fpdf'.DIRECTORY_SEPARATOR.'fpdf.php';
     }
   }
 }

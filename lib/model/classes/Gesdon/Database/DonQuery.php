@@ -2,8 +2,11 @@
 
 namespace Gesdon\Database;
 
-use Gesdon\Database\om\BaseDonQuery;
+require_once __DIR__.DIRECTORY_SEPARATOR.'RecuFiscalHasDonQuery.php';
 
+use Gesdon\Database\om\BaseDonQuery;
+use Gesdon\Database\RecuFiscal;
+use Gesdon\Database\RecuFiscalHasDonQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'don' table.
@@ -23,5 +26,13 @@ class DonQuery extends BaseDonQuery
     return $this->filterByIdentPaiement($donateur->getIdentPaiement())
                 ->filterByDatePaiement($debut, \Criteria::GREATER_EQUAL)
                 ->filterByDatePaiement($fin, \Criteria::LESS_EQUAL);
+  }
+  
+  
+  public function filterByRecuFiscal(RecuFiscal $recu_fiscal)
+  {
+    return $this->useRecuFiscalHasDonQuery()
+                  ->filterByRecuFiscal($recu_fiscal)
+                ->endUse();
   }
 } // DonQuery
