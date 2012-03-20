@@ -110,5 +110,54 @@ CREATE TABLE `cmcic_info`
 		ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------------------------
+-- recu_fiscal
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `recu_fiscal`;
+
+CREATE TABLE `recu_fiscal`
+(
+	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`numero` INTEGER,
+	`date_creation` DATETIME,
+	`nom` VARCHAR(255),
+	`prenom` VARCHAR(255),
+	`email` VARCHAR(255),
+	`rue` TEXT,
+	`cp` VARCHAR(20),
+	`ville` VARCHAR(255),
+	`pays` VARCHAR(255),
+	`montant` DOUBLE,
+	`moyen_paiement` VARCHAR(255),
+	`date_don_debut` DATETIME,
+	`date_don_fin` DATETIME,
+	`recurrent` TINYINT(1),
+	`filename` VARCHAR(255),
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- recu_fiscal_has_don
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `recu_fiscal_has_don`;
+
+CREATE TABLE `recu_fiscal_has_don`
+(
+	`recu_fiscal_id` INTEGER NOT NULL,
+	`don_id` INTEGER NOT NULL,
+	PRIMARY KEY (`recu_fiscal_id`,`don_id`),
+	INDEX `FI__don_recu_fiscal_has_don` (`don_id`),
+	CONSTRAINT `Rel_don_recu_fiscal_has_don`
+		FOREIGN KEY (`don_id`)
+		REFERENCES `don` (`id`)
+		ON DELETE CASCADE,
+	CONSTRAINT `Rel_recu_fiscal_recu_fiscal_has_don`
+		FOREIGN KEY (`recu_fiscal_id`)
+		REFERENCES `recu_fiscal` (`id`)
+		ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

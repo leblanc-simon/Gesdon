@@ -69,4 +69,32 @@
       <reference local="donateur_id" foreign="id"/>
     </foreign-key>
   </table>
+  <table name="recu_fiscal">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="numero" type="INTEGER"/>
+    <column name="date_creation" type="TIMESTAMP"/>
+    <column name="nom" type="VARCHAR" size="255"/>
+    <column name="prenom" type="VARCHAR" size="255"/>
+    <column name="email" type="VARCHAR" size="255"/>
+    <column name="rue" type="LONGVARCHAR"/>
+    <column name="cp" type="VARCHAR" size="20"/>
+    <column name="ville" type="VARCHAR" size="255"/>
+    <column name="pays" type="VARCHAR" size="255"/>
+    <column name="montant" type="DOUBLE"/>
+    <column name="moyen_paiement" type="VARCHAR" size="255"/>
+    <column name="date_don_debut" type="TIMESTAMP"/>
+    <column name="date_don_fin" type="TIMESTAMP"/>
+    <column name="recurrent" type="BOOLEAN"/>
+    <column name="filename" type="VARCHAR" size="255"/>
+  </table>
+  <table name="recu_fiscal_has_don">
+    <column name="recu_fiscal_id" type="INTEGER" primaryKey="true" required="true" />
+    <column name="don_id" type="INTEGER" primaryKey="true" required="true" />
+    <foreign-key foreignTable="don" name="Rel_don_recu_fiscal_has_don" onDelete="cascade">
+      <reference local="don_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="recu_fiscal" name="Rel_recu_fiscal_recu_fiscal_has_don" onDelete="cascade">
+      <reference local="recu_fiscal_id" foreign="id"/>
+    </foreign-key>
+  </table>
 </database>

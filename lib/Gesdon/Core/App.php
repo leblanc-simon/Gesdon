@@ -52,13 +52,7 @@ class App
   
   static private function setup()
   {
-    $config_file = self::$config_dir.DIRECTORY_SEPARATOR.'config.php';
-    if (file_exists($config_file) === false) {
-      throw new \RuntimeException('Impossible de lire le fichier de configuration');
-    }
-    
-    require_once $config_file;
-    
+    // On charge d'abord les config de base pour pouvoir les utiliser dans le fichier de config utilisateur
     Config::add(array(
       'base_dir'    => self::$base_dir,
       'app_dir'     => self::$app_dir,
@@ -67,14 +61,26 @@ class App
       'lib_dir'     => self::$lib_dir,
       'vendor_dir'  => self::$vendor_dir,
     ));
+    
+    $config_file = self::$config_dir.DIRECTORY_SEPARATOR.'config.php';
+    if (file_exists($config_file) === false) {
+      throw new \RuntimeException('Impossible de lire le fichier de configuration');
+    }
+    
+    require_once $config_file;
   }
   
   static private function autoload()
   {
     Autoload::register();
     
+    \Gesdon\Utils\Vendor::register();
+    
     // Propel autoloader
     require_once self::$vendor_dir.DIRECTORY_SEPARATOR.'propel'.DIRECTORY_SEPARATOR.'runtime'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'Propel.php';
     \Propel::init(self::$config_dir.DIRECTORY_SEPARATOR.'Gesdon-conf.php');
+    
+    // Swift autoloader
+    require_once self::$vendor_dir.DIRECTORY_SEPARATOR.'swiftmailer'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'swift_required.php';
   }
 }

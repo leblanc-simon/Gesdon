@@ -16,6 +16,12 @@ use Gesdon\Database\om\BaseDonQuery;
  *
  * @package    propel.generator.Gesdon.Database
  */
-class DonQuery extends BaseDonQuery {
-
+class DonQuery extends BaseDonQuery
+{
+  public function filterByDonateurAndDate(Donateur $donateur, \DateTime $debut, \DateTime $fin)
+  {
+    return $this->filterByIdentPaiement($donateur->getIdentPaiement())
+                ->filterByDatePaiement($debut, \Criteria::GREATER_EQUAL)
+                ->filterByDatePaiement($fin, \Criteria::LESS_EQUAL);
+  }
 } // DonQuery

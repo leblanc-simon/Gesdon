@@ -1,5 +1,7 @@
 <?php
 
 \Gesdon\Core\Config::add(array(
-  'model_dir' => __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'model'.DIRECTORY_SEPARATOR.'classes',
+  'model_dir'       => \Gesdon\Core\Config::get('lib_dir').DIRECTORY_SEPARATOR.'model'.DIRECTORY_SEPARATOR.'classes',
+  'pdf_dir'         => \Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'pdf',
+  'next_num_fiscal' => 2000,
 ));
