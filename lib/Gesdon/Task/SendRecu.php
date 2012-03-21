@@ -225,8 +225,6 @@ class SendRecu extends BaseTask
       } catch (\Exception $e) {
         $this->logSection(__METHOD__, $e->getMessage(), BaseTask::ERROR);
       }
-      
-      die("\nend -----\n");
     }
     
     $this->logSection(__METHOD__, 'end');
