@@ -163,8 +163,7 @@ class SendRecu extends BaseTask
       }
       
       try {
-        //$email = $recu->getEmail();
-        $email = 'contact@leblanc-simon.eu';
+        $email = $recu->getEmail();
         if (empty($email) === true) {
           $this->logSection(__METHOD__, 'L\'envoi du reçu n\'est pas possible pour un donateur sans adresse email');
           continue;
