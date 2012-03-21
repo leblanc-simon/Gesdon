@@ -2,6 +2,7 @@
 
 namespace Gesdon\Task;
 
+use Gesdon\Core\Config;
 use Gesdon\Core\Exception;
 use Gesdon\Database\DonPeer;
 use Gesdon\Database\Donateur;
@@ -10,6 +11,7 @@ use Gesdon\Database\DonateurQuery;
 use Gesdon\Database\RecuFiscal;
 use Gesdon\Database\RecuFiscalPeer;
 use Gesdon\Database\RecuFiscalQuery;
+use Gesdon\Utils\RecuPdf;
 
 
 class SendRecu extends BaseTask
@@ -60,6 +62,25 @@ class SendRecu extends BaseTask
    */
   public function run()
   {
+    if ($this->generateRecuDb() === true) {
+      $this->generateRecuPdf();
+      $this->sendPdf();
+    }
+  }
+  
+  
+  /**
+   * Génére en base de données les données pour les reçus
+   *
+   * @return  bool    Vrai si aucune erreur, faux sinon
+   * @access  private
+   */
+  private function generateRecuDb()
+  {
+    $this->logSection(__METHOD__, 'begin');
+    
+    $no_error = true;
+    
     $sql = 'SELECT * FROM donateur WHERE ident_paiement IN'
            .'(SELECT DISTINCT(don.ident_paiement) FROM don'
            .' WHERE date_paiement >= :debut'
@@ -82,16 +103,198 @@ class SendRecu extends BaseTask
     
     foreach ($donateurs as $donateur) {
       try {
-        // Conversion du donateur en reçu fiscal
         $recu_fiscal = \Gesdon\Utils\Convert::donnateurToRecuFical($donateur, $this->debut, $this->fin);
         $this->logSection(__METHOD__, 'La conversion du donateur : '.$donateur->getId().' a été réalisée : '.$recu_fiscal->getId());
-        // Génération du PDF
-        
-        // Envoie du PDF
       } catch (\Exception $e) {
+        $no_error = false;
         $this->logSection(__METHOD__, 'Erreur la conversion du donateur : '.$donateur->getId(), BaseTask::ERROR);
         continue;
       }
+    }
+    
+    $this->logSection(__METHOD__, 'end');
+    
+    return $no_error;
+  }
+  
+  
+  /**
+   * Génére les reçus au format PDF
+   *
+   * @access  private
+   */
+  private function generateRecuPdf()
+  {
+    $this->logSection(__METHOD__, 'begin');
+    
+    $recus = RecuFiscalQuery::create()
+                ->filterByDateDonDebut(array('min' => $this->debut, 'max' => $this->fin))
+                ->filterByEnvoye(false)
+                ->find();
+    
+    foreach ($recus as $recu) {
+      $this->logSection(__METHOD__, 'Génération du PDF pour le reçu : '.$recu->getId());
+      $recu_pdf = new RecuPdf();
+      $recu_pdf->init($recu);
+      $recu_pdf->generatePDF(true);
+    }
+    
+    $this->logSection(__METHOD__, 'end');
+  }
+  
+  
+  /**
+   * Envoie l'ensemble des reçus non envoyé
+   */
+  private function sendPdf()
+  {
+    $this->logSection(__METHOD__, 'begin');
+    
+    $recus = RecuFiscalQuery::create()
+                ->filterByDateDonDebut(array('min' => $this->debut, 'max' => $this->fin))
+                ->filterByEnvoye(false)
+                ->filterByPays('France')
+                ->find();
+    
+    foreach ($recus as $recu) {
+      if (Config::get('mail_attente') !== null) {
+        $this->logSection(__METHOD__, 'On attend '.Config::get('mail_attente').' secondes');
+        sleep(Config::get('mail_attente'));
+      }
+      
+      try {
+        //$email = $recu->getEmail();
+        $email = 'contact@leblanc-simon.eu';
+        if (empty($email) === true) {
+          $this->logSection(__METHOD__, 'L\'envoi du reçu n\'est pas possible pour un donateur sans adresse email');
+          continue;
+        }
+        
+        // On récupère le texte à envoyer
+        $message_type = $this->initMessage($recu, $this->getMessage($recu));
+        
+        // On initialise le mail
+        $message = \Swift_Message::newInstance();
+        $message->setSubject($this->getSubject($recu));
+        $message->setBody($message_type, 'text/plain');
+        $message->setFrom(Config::get('mail_from'));
+        $message->setReplyTo(Config::get('mail_from'));
+        $mail_bcc = Config::get('mail_bcc');
+        if (empty($mail_bcc) === false) {
+          $message->setBcc($mail_bcc);
+        }
+        $message->setTo(array($email => $recu->getNom().' '.$recu->getPrenom()));
+        
+        // On inclue le PDF du reçu
+        $filename = Config::get('pdf_dir').DIRECTORY_SEPARATOR.$recu->getFilename();
+        if (file_exists($filename) === true) {
+          $attachment = \Swift_Attachment::fromPath($filename, 'application/pdf');
+          $attachment->setFilename('recu_framasoft_'.$recu->getNumero().'.pdf');
+          $message->attach($attachment);
+        } else {
+          $this->logSection(__METHOD__, 'Le fichier '.$filename.' n\'existe pas', BaseTask::ERROR);
+        }
+        
+        // On prépare le transport
+        if (Config::get('smtp') === true) {
+          $transport = \Swift_SmtpTransport::newInstance(Config::get('smtp_server'), Config::get('smtp_port'), Config::get('smtp_secure'));
+          if (Config::get('smtp_user') !== null) {
+            $transport->setUsername(Config::get('smtp_user'));
+            $transport->setPassword(Config::get('smtp_pass'));
+          }
+        } else {
+          $transport = \Swift_MailTransport::newInstance();
+        }
+        
+        $mailer = \Swift_Mailer::newInstance($transport);
+        
+        // On envoi le mail
+        if (!$mailer->send($message, $failures)) {
+          throw new \Exception('Failure send : '.implode(', ', $failures));
+        } else {
+          $this->logSection(__METHOD__, 'L\'envoi du reçu '.$recu->getId().' a été effectué');
+        }
+        
+        // On marque le reçu comme envoyé
+        $recu->setEnvoye(true);
+        $recu->save();
+        
+        // On vide la mémoire 
+        unset($mailer, $transport, $message, $failures);
+        
+      } catch (\Exception $e) {
+        $this->logSection(__METHOD__, $e->getMessage(), BaseTask::ERROR);
+      }
+      
+      die("\nend -----\n");
+    }
+    
+    $this->logSection(__METHOD__, 'end');
+  }
+  
+  
+  /**
+   * Concerti un message type en message pour le mail
+   *
+   * @param   RecuFiscal  $recu     Le reçu fiscal
+   * @param   string      $message  Le message type
+   * @return  string                Le message avec les variables remplacées
+   * @access  private
+   */
+  private function initMessage(RecuFiscal $recu, $message)
+  {
+    $vars = array(
+      'id'            => $recu->getNumero(),
+      'date_don'      => $recu->getDateDonTexte(),
+      'moyen_paiement'=> $recu->getMoyenPaiement(),
+      'montant'       => $recu->getMontant(),
+      'nom'           => $recu->getNom(),
+      'prenom'        => $recu->getPrenom(),
+      'adresse'       => $recu->getRue(),
+      'cp'            => $recu->getCp(),
+      'ville'         => $recu->getVille(),
+      'pays'          => $recu->getPays(),
+      'email'         => $recu->getEmail()
+    );
+    
+    foreach ($vars as $key => $value) {
+      $message = str_replace('%%'.$key.'%%', $value, $message);
+    }
+    
+    return $message;
+  }
+  
+  
+  /**
+   * Récupère le message en fonction du reçu fiscal
+   *
+   * @param   RecuFiscal  $recu     Le reçu fiscal
+   * @return  string      $message  Le message type
+   * @access  private
+   */
+  private function getMessage(RecuFiscal $recu)
+  {
+    if ($recu->getRecurrent() === true) {
+      return Config::get('mail_message_recurrent');
+    } else {
+      return Config::get('mail_message');
+    }
+  }
+  
+  
+  /**
+   * Récupère le sujet en fonction du reçu fiscal
+   *
+   * @param   RecuFiscal  $recu     Le reçu fiscal
+   * @return  string      $message  Le message type
+   * @access  private
+   */
+  private function getSubject(RecuFiscal $recu)
+  {
+    if ($recu->getRecurrent() === true) {
+      return Config::get('mail_subject_recurrent');
+    } else {
+      return Config::get('mail_subject');
     }
   }
   

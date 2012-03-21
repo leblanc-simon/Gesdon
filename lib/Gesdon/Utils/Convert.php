@@ -48,6 +48,7 @@ class Convert
       $recu_fiscal->setDateDonFin($fin);
       $recu_fiscal->setRecurrent(Convert::isRecurrent($donateur, $debut, $fin));
       $recu_fiscal->setFilename(sha1(rand(0, 999999).microtime().rand(0, 999999)).'.pdf');
+      $recu_fiscal->setEnvoye(false);
       $recu_fiscal->save($con);
       
       $dons = DonQuery::create()->filterByDonateurAndDate($donateur, $debut, $fin)->find();

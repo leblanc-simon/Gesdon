@@ -86,6 +86,7 @@
     <column name="date_don_fin" type="TIMESTAMP"/>
     <column name="recurrent" type="BOOLEAN"/>
     <column name="filename" type="VARCHAR" size="255"/>
+    <column name="envoye" type="BOOLEAN"/>
   </table>
   <table name="recu_fiscal_has_don">
     <column name="recu_fiscal_id" type="INTEGER" primaryKey="true" required="true" />

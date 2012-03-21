@@ -134,6 +134,7 @@ CREATE TABLE `recu_fiscal`
 	`date_don_fin` DATETIME,
 	`recurrent` TINYINT(1),
 	`filename` VARCHAR(255),
+	`envoye` TINYINT(1),
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
