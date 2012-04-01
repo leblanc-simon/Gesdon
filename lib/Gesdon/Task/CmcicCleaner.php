@@ -67,8 +67,12 @@ class CmcicCleaner extends BaseTask
    */
   public function run ()
   {
+    $this->logSection(__METHOD__, 'begin');
+    
     $this->getRecurrentYear();
     $this->deleteRecurrent();
+    
+    $this->logSection(__METHOD__, 'end');
   }
   
   
@@ -80,6 +84,8 @@ class CmcicCleaner extends BaseTask
    */
   private function getRecurrentYear()
   {
+    $this->logSection(__METHOD__, 'begin');
+    
     $ident_paiements = $this->getCmcic()->getPaymentsWithMore(Config::get('cmcic_nb_month'));
     
     if ($ident_paiements === false) {
@@ -88,6 +94,7 @@ class CmcicCleaner extends BaseTask
     
     $this->ident_paiements = $ident_paiements;
     
+    $this->logSection(__METHOD__, 'end');
     return $this->ident_paiements;
   }
   
@@ -99,7 +106,10 @@ class CmcicCleaner extends BaseTask
    */
   private function deleteRecurrent()
   {
+    $this->logSection(__METHOD__, 'begin');
+    
     foreach ($this->ident_paiements as $ident_paiement) {
+      $this->logSection(__METHOD__, 'Traitement du donateur : '.$ident_paiement);
       $result = $this->getCmcic()->cancelPayment($ident_paiement);
       if ($result === true) {
         $this->markAsDeleted($ident_paiement);
@@ -107,6 +117,8 @@ class CmcicCleaner extends BaseTask
         $this->logSection(__METHOD__, 'Erreur lors de la suppression du paiement : '.$ident_paiement, 'ERROR');
       }
     }
+    
+    $this->logSection(__METHOD__, 'end');
   }
   
   
@@ -119,6 +131,8 @@ class CmcicCleaner extends BaseTask
    */
   private function markAsDeleted($ident_paiement)
   {
+    $this->logSection(__METHOD__, 'begin');
+    
     $donateur = DonateurQuery::create()->filterByIdentPaiement($ident_paiement)->findOne();
     if ($donateur === null) {
       // Le donateur n'existe pas dans la base c'est un soucis
@@ -130,6 +144,7 @@ class CmcicCleaner extends BaseTask
     if (count($infos) !== 1) {
       // Il n'y a pas un nombre cohérent d'information
       $this->logSection(__METHOD__, 'Nombre incohérent d\'information sur le client : '.count($infos), 'ERROR');
+      return false;
     }
     
     $info = $infos[0];
@@ -139,6 +154,7 @@ class CmcicCleaner extends BaseTask
     $info->setLibAnnulation('EXPIRATION AUTO 12 MOIS');
     $info->save($this->getConnection());
     
+    $this->logSection(__METHOD__, 'end');
     return true;
   }
   
