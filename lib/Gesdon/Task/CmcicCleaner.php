@@ -13,12 +13,6 @@ use Gesdon\Database\CmcicInfo;
 use Gesdon\Database\CmcicInfoPeer;
 use Gesdon\Database\CmcicInfoQuery;
 
-
-/**
- *
- * @author leviathan
- *        
- */
 class CmcicCleaner extends BaseTask
 {
 
