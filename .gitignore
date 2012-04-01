@@ -2,6 +2,7 @@ gesdon_v2.komodoproject
 config/runtime-conf.xml
 config/Gesdon-conf.php
 config/classmap-Gesdon-conf.php
+config/config.php
 lib/model/classes/Gesdon/Database/map
 lib/model/classes/Gesdon/Database/om
 data/recurrents.csv

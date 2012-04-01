@@ -82,5 +82,8 @@ class App
     
     // Swift autoloader
     require_once self::$vendor_dir.DIRECTORY_SEPARATOR.'swiftmailer'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'swift_required.php';
+    
+    // OpenCmcicAction autoloader (enfin des required quoi :-))
+    require_once self::$vendor_dir.DIRECTORY_SEPARATOR.'OpenCmcicAction'.DIRECTORY_SEPARATOR.'config.inc.php';
   }
 }
