@@ -1,0 +1,72 @@
+{
+    "name": "framasoft/gesdon",
+    "description": "Application de gestion de dons",
+    "version": "1.0.0-dev",
+    "homepage": "http://github.com/framasoft/Gesdon",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Simon Leblanc",
+            "email": "contact@leblanc-simon.eu",
+            "homepage": "http://www.leblanc-simon.fr",
+            "role": "Developer"
+        }
+    ],
+
+    "require": {
+        "silex/silex": "1.0.*",
+
+        "twig/twig": ">=1.9,<2.0-dev",
+
+        "symfony/form": "2.1.*",
+        "symfony/validator": "2.1.*",
+        "symfony/config": "2.1.*",
+        "symfony/translation": "2.1.*",
+        "symfony/yaml": "2.1.*",
+        "symfony/locale": "2.1.*",
+        "symfony/twig-bridge": "2.1.*",
+        "symfony/finder": "2.1.*",
+        "symfony/console": "2.1.*",
+
+        "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
+        
+        "tcpdf/tcpdf": "5.9.206",
+        
+        "propel/propel1": "1.6.*"
+    },
+    
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "tcpdf/tcpdf",
+                "version": "5.9.206",
+                "dist": {
+                    "url": "http://downloads.sourceforge.net/project/tcpdf/tcpdf_5_9_206.zip",
+                    "type": "zip"
+                },
+                "autoload": {
+                    "classmap": [
+                        "fonts",
+                        "config/lang",
+                        "config",
+                        "2dbarcodes.php",
+                        "barcodes.php",
+                        "datamatrix.php",
+                        "encodings_maps.php",
+                        "htmlcolors.php",
+                        "pdf417.php",
+                        "qrcode.php",
+                        "spotcolors.php",
+                        "tcpdf.php",
+                        "tcpdf_filters.php",
+                        "tcpdf_parser.php",
+                        "unicode_data.php"
+                    ]
+                }
+            }
+        }
+    ],
+
+    "minimum-stability": "dev"
+}

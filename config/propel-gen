@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SCRIPT_DIRECTORY=`( cd -P $(dirname $0); pwd)`
+
+PROPEL_GEN_HOME=${SCRIPT_DIRECTORY}/../vendor/propel/propel1/generator
+export PROPEL_GEN_HOME
+
+export PHING_COMMAND="/usr/bin/php -f $PROPEL_GEN_HOME/bin/phing.php"
+. ${PROPEL_GEN_HOME}/bin/propel-gen
