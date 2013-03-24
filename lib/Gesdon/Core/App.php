@@ -2,6 +2,8 @@
 
 namespace Gesdon\Core;
 
+use Symfony\Component\Console\Application as ConsoleApplication;
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'Config.php';
 require_once __DIR__.DIRECTORY_SEPARATOR.'Autoload.php';
 
@@ -19,14 +21,15 @@ class App
     throw new Exception('Rien à voir pour le moment');
   }
   
-  static public function runTask($taskname, $args = array())
+  static public function runTask()
   {
     self::baseRun();
     
-    $task_class = 'Gesdon\\Task\\'.$taskname;
-    $task = new $task_class($args);
+    $application = new ConsoleApplication();
+    $application->add(new \Gesdon\Task\SendRecu);
+    $application->add(new \Gesdon\Task\SendSingleRecu);
     
-    return $task->run();
+    return $application;
   }
   
   

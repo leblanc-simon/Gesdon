@@ -13,67 +13,88 @@ use Gesdon\Database\RecuFiscalPeer;
 use Gesdon\Database\RecuFiscalQuery;
 use Gesdon\Utils\RecuPdf;
 
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Output\OutputInterface;
+
 
 class SendSingleRecu extends BaseTask
 {
-  /**
-   * Connexion PDO
-   * @var     PDO
-   * @access  private
-   */
-  private $con = null;
-  
   private $debut       = null;
   private $fin         = null;
   private $donateur_id = null;
   private $email       = null;
   
+  
   /**
-   * Constructeur
-   *
-   * @param   array   $args   Les arguments de la tâche
-   * @access  public
-   * @see     BaseTask::__construct
+   * Configuration de la tâche
    */
-  public function __construct($args = array())
+  protected function configure()
   {
-    parent::__construct($args);
+    $this
+          ->setName('send:single-recu')
+          ->setDescription('Envoyer le reçu fiscal pour les dons effectués entre 2 dates d\'un donateur donné')
+          ->addArgument('debut',
+                        InputArgument::REQUIRED,
+                        'Date de début pour la recherche des dons'
+          )
+          ->addArgument('fin',
+                        InputArgument::REQUIRED,
+                        'Date de fin pour la recherche des dons'
+          )
+          ->addArgument('id',
+                        InputArgument::REQUIRED,
+                        'Identifiant du donateur'
+          );
+  }
+  
+  
+  /**
+   * Execution de la tâche
+   *
+   * @param   \Symfony\Component\Console\Input\InputInterface   $input  les entrées de la console
+   * @param   \Symfony\Component\Console\Output\OutputInterface $output les sortie de la console
+   * @access  protected
+   */
+  public function execute(InputInterface $input, OutputInterface $output)
+  {
+    $this->setOutput($output);
     
-    if (isset($args[0]) === false || isset($args[1]) === false || isset($args[2]) === false) {
-      throw new Exception('La tâche attend 2 arguments : date de début et date de fin');
-    }
+    $debut  = $input->getArgument('debut');
+    $fin    = $input->getArgument('fin');
+    $id     = $input->getArgument('id');
     
-    if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $args[0]) === 0 || preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $args[1]) === 0) {
+    if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $debut) === 0 || preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $fin) === 0) {
       throw new Exception('Date de début et date de fin doivent être au format anglais : yyyy-mm-dd');
     }
-
-    if (is_numeric($args[2]) === false) {
-      throw new Exception('L\'identifiant du donateur doit etre un numerique');
-    }
     
-    $this->debut = new \DateTime($args[0]);
-    $this->fin = new \DateTime($args[1]);
-    $this->donateur_id = (int)$args[2];
-    $this->fin->setTime(23, 59, 59);
+    $this->debut = new \DateTime($debut);
+    $this->fin = new \DateTime($fin);
     
     // Si l'utilisateur a inversé début et fin, on corrige automatiquement (oui, l'utilisateur est con par défaut :-))
     if ($this->debut > $this->fin) {
       list($this->debut, $this->fin) = array($this->fin, $this->debut);
     }
-  }
-  
-  
-  /**
-   * Lancement de la tâche
-   *
-   * @access  public
-   */
-  public function run()
-  {
+    
+    // On place la fin à 23:59:59 pour récupérer tous les dons (sans oublier la dernière journée)
+    $this->fin->setTime(23, 59, 59);
+
+    if (is_numeric($id) === false) {
+      throw new Exception('L\'identifiant du donateur doit etre un numerique');
+    }
+    
+    $this->donateur_id = (int)$id;
+    
+    // On lance la tâche
+    $this->log('Lancement de la tâche');
     if ($this->generateRecuDb() === true) {
       $this->generateRecuPdf();
       $this->sendPdf();
+    } else {
+      $this->log('Erreur lors de la génération de la base de données des reçus', 'error');
     }
+    
+    $this->log('Fin du traitement de la tâche');
   }
   
   
@@ -103,7 +124,7 @@ class SendSingleRecu extends BaseTask
     $stmt->bindValue(':id', $this->donateur_id, \PDO::PARAM_INT);
     
     if ($stmt->execute() === false) {
-      $this->logSection(__METHOD__, 'Erreur la récupération des donateurs', BaseTask::ERROR);
+      $this->log('Erreur la récupération des donateurs', 'error');
       throw new Exception('impossible de finir la tâche');
     }
     
@@ -115,15 +136,15 @@ class SendSingleRecu extends BaseTask
       try {
         $recu_fiscal = \Gesdon\Utils\Convert::donnateurToRecuFical($donateur, $this->debut, $this->fin);
         $this->email = $donateur->getEmail();
-        $this->logSection(__METHOD__, 'La conversion du donateur : '.$donateur->getId().' a été réalisée : '.$recu_fiscal->getId());
+        $this->log('La conversion du donateur : '.$donateur->getId().' a été réalisée : '.$recu_fiscal->getId());
       } catch (\Exception $e) {
         $no_error = false;
-        $this->logSection(__METHOD__, 'Erreur la conversion du donateur : '.$donateur->getId(), BaseTask::ERROR);
+        $this->log('Erreur la conversion du donateur : '.$donateur->getId(), 'error');
         continue;
       }
     }
     
-    $this->logSection(__METHOD__, 'end');
+    $this->log('end');
     
     return $no_error;
   }
@@ -136,7 +157,7 @@ class SendSingleRecu extends BaseTask
    */
   private function generateRecuPdf()
   {
-    $this->logSection(__METHOD__, 'begin');
+    $this->log('begin');
     
     $recus = RecuFiscalQuery::create()
                 ->filterByDateDonDebut(array('min' => $this->debut, 'max' => $this->fin))
@@ -145,13 +166,13 @@ class SendSingleRecu extends BaseTask
                 ->find();
     
     foreach ($recus as $recu) {
-      $this->logSection(__METHOD__, 'Génération du PDF pour le reçu : '.$recu->getId());
+      $this->log('Génération du PDF pour le reçu : '.$recu->getId());
       $recu_pdf = new RecuPdf();
       $recu_pdf->init($recu);
       $recu_pdf->generatePDF(true);
     }
     
-    $this->logSection(__METHOD__, 'end');
+    $this->log('end');
   }
   
   
@@ -160,7 +181,7 @@ class SendSingleRecu extends BaseTask
    */
   private function sendPdf()
   {
-    $this->logSection(__METHOD__, 'begin');
+    $this->log('begin');
     
     $recus = RecuFiscalQuery::create()
                 ->filterByDateDonDebut(array('min' => $this->debut, 'max' => $this->fin))
@@ -173,7 +194,7 @@ class SendSingleRecu extends BaseTask
       try {
         $email = $recu->getEmail();
         if (empty($email) === true) {
-          $this->logSection(__METHOD__, 'L\'envoi du reçu n\'est pas possible pour un donateur sans adresse email');
+          $this->log('L\'envoi du reçu n\'est pas possible pour un donateur sans adresse email', 'comment');
           continue;
         }
         
@@ -199,7 +220,7 @@ class SendSingleRecu extends BaseTask
           $attachment->setFilename('recu_framasoft_'.$recu->getNumero().'.pdf');
           $message->attach($attachment);
         } else {
-          $this->logSection(__METHOD__, 'Le fichier '.$filename.' n\'existe pas', BaseTask::ERROR);
+          $this->log('Le fichier '.$filename.' n\'existe pas', 'error');
         }
         
         // On prépare le transport
@@ -219,7 +240,7 @@ class SendSingleRecu extends BaseTask
         if (!$mailer->send($message, $failures)) {
           throw new \Exception('Failure send : '.implode(', ', $failures));
         } else {
-          $this->logSection(__METHOD__, 'L\'envoi du reçu '.$recu->getId().' a été effectué');
+          $this->log('L\'envoi du reçu '.$recu->getId().' a été effectué');
         }
         
         // On marque le reçu comme envoyé
@@ -230,11 +251,11 @@ class SendSingleRecu extends BaseTask
         unset($mailer, $transport, $message, $failures);
         
       } catch (\Exception $e) {
-        $this->logSection(__METHOD__, $e->getMessage(), BaseTask::ERROR);
+        $this->log($e->getMessage(), 'error');
       }
     }
     
-    $this->logSection(__METHOD__, 'end');
+    $this->log('end');
   }
   
   
@@ -301,21 +322,5 @@ class SendSingleRecu extends BaseTask
     } else {
       return Config::get('mail_subject');
     }
-  }
-  
-  
-  /**
-   * Récupère une connexion à la base de données
-   *
-   * @return  PDO   une connexion à la base de données
-   * @access  private
-   */
-  private function getConnection()
-  {
-    if ($this->con === null) {
-      $this->con = \Propel::getConnection(DonateurPeer::DATABASE_NAME, \Propel::CONNECTION_WRITE);
-    }
-    
-    return $this->con;
   }
 }

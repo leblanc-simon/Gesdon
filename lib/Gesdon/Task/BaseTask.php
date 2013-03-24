@@ -2,30 +2,68 @@
 
 namespace Gesdon\Task;
 
-use Gesdon\Core\Exception;
+use Gesdon\Database\DonateurPeer;
 
-abstract class BaseTask
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
+
+abstract class BaseTask extends Command
 {
-  const INFO  = 'INFO';
-  const ERROR = 'ERROR';
+  /**
+   * Connexion PDO
+   * @var     \PDO
+   * @access  protected
+   */
+  protected $con  = null;
   
-  public function __construct($args = array())
+  /**
+   * Sortie sur la console
+   * @var     \Symfony\Component\Console\Output\OutputInterface
+   * @access  private
+   */
+  private $output  = null;
+  
+  
+  /**
+   * Initialise l'objet de sortie sur la console
+   *
+   * @param \Symfony\Component\Console\Output\OutputInterface  $output   l'objet de sortie sur la console
+   */
+  protected function setOutput(OutputInterface $output)
   {
+    $this->output = $output;
   }
   
   
-  abstract public function run();
-  
-  protected function logSection($section, $message, $type = BaseTask::INFO)
+  /**
+   * Récupère une connexion à la base de données
+   *
+   * @return  PDO   une connexion à la base de données
+   * @access  protected
+   */
+  protected function getConnection()
   {
-    // La plupart du temps : section == __METHOD__
-    // Pour simplifier, on supprime la classe de la section : c'est crade et aléatoire mais j'assume :-)
-    $section = str_replace(get_called_class().'::', '', $section);
-    $this->log($section."\t".$message, $type);
+    if ($this->con === null) {
+      $this->con = \Propel::getConnection(DonateurPeer::DATABASE_NAME, \Propel::CONNECTION_WRITE);
+    }
+    
+    return $this->con;
   }
   
-  protected function log($message, $type = BaseTask::INFO)
+  
+  /**
+   * Log un message
+   *
+   * @param   string    $message  Le message à logger
+   * @param   string    $type     Le type du message (info, error, comment, question)
+   * @access  protected
+   */
+  protected function log($message, $type = 'info')
   {
-    echo get_called_class().' - '.date('Y-m-d H:i:s')."\t".'['.$type.']'."\t".$message."\n";
+    $backtrace = debug_backtrace();
+    $method = $backtrace[1]['function'];
+    $class=  isset($backtrace[1]['class']) ? $backtrace[1]['class'].'::' : '';
+    
+    $this->output->writeln('<'.$type.'>'.date('Y-m-d-h:i:s').' '.$class.$method.' '.$message.'</'.$type.'>');
   }
 }
