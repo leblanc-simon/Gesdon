@@ -15,6 +15,7 @@ use Gesdon\Utils\RecuPdf;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SendRecu extends BaseTask
@@ -37,7 +38,8 @@ class SendRecu extends BaseTask
           ->addArgument('fin',
                         InputArgument::REQUIRED,
                         'Date de fin pour la recherche des dons'
-          );
+          )
+          ->addOption('build-only', null, InputOption::VALUE_NONE, 'Génére les reçus mais ne les envoi pas', null);
   }
   
   
@@ -52,8 +54,9 @@ class SendRecu extends BaseTask
   {
     $this->setOutput($output);
     
-    $debut  = $input->getArgument('debut');
-    $fin    = $input->getArgument('fin');
+    $debut      = $input->getArgument('debut');
+    $fin        = $input->getArgument('fin');
+    $build_only = $input->getOption('build-only');
     
     if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $debut) === 0 || preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $fin) === 0) {
       throw new Exception('Date de début et date de fin doivent être au format anglais : yyyy-mm-dd');
@@ -75,7 +78,11 @@ class SendRecu extends BaseTask
     
     if ($this->generateRecuDb() === true) {
       $this->generateRecuPdf();
-      $this->sendPdf();
+      if ($build_only === false) {
+        $this->sendPdf();
+      } else {
+        $this->log('Option "build-only" activé : pas d\'envoi de mail');
+      }
     } else {
       $this->log('Erreur lors de la génération de la base de données des reçus', 'error');
     }
