@@ -27,6 +27,7 @@ class Migrate extends BaseTask
   protected $process_paypal = false;
   protected $process_cheques = false;
   protected $process_virements = false;
+  protected $process_evl = false;
   
   /**
    * Configuration de la tâche
@@ -40,7 +41,8 @@ class Migrate extends BaseTask
           ->addOption('cmcic-recurrent', null, InputOption::VALUE_NONE, 'Traiter les données du CMCIC (dons récurrent)', null)
           ->addOption('paypal', null, InputOption::VALUE_NONE, 'Traiter les données de Paypal', null)
           ->addOption('cheques', null, InputOption::VALUE_NONE, 'Traiter les données de chèques', null)
-          ->addOption('virements', null, InputOption::VALUE_NONE, 'Traiter les données de virement', null);
+          ->addOption('virements', null, InputOption::VALUE_NONE, 'Traiter les données de virement', null)
+          ->addOption('evl', null, InputOption::VALUE_NONE, 'Traiter les données de EVL', null);
   }
   
   
@@ -60,6 +62,7 @@ class Migrate extends BaseTask
     $this->process_paypal           = $input->getOption('paypal');
     $this->process_cheques          = $input->getOption('cheques');
     $this->process_virements        = $input->getOption('virements');
+    $this->process_evl              = $input->getOption('evl');
     
     if ($this->process_cmcic === true) {
       $this->processCmcic();
@@ -75,6 +78,9 @@ class Migrate extends BaseTask
     }
     if ($this->process_virements === true) {
       $this->processVirements();
+    }
+    if ($this->process_evl === true) {
+      $this->processEvl();
     }
   }
   
@@ -367,6 +373,21 @@ class Migrate extends BaseTask
     $this->log('begin');
     
     $this->processCsv(\Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'virements.csv', 'VIR_', DonPeer::VIREMENT);
+    
+    $this->log('end');
+  }
+  
+  
+  /**
+   * Traitement des données concernant les virement (import par CSV)
+   *
+   * @access  private
+   */
+  private function processEvl()
+  {
+    $this->log('begin');
+    
+    $this->processCsv(\Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'evl.csv', 'EVL_', DonPeer::CARTE_BANCAIRE);
     
     $this->log('end');
   }
