@@ -39,7 +39,7 @@
 
         "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
         
-        "tcpdf/tcpdf": "5.9.206",
+        "tcpdf/tcpdf": "6.0.010",
         
         "propel/propel1": "1.6.*",
         
@@ -51,9 +51,9 @@
             "type": "package",
             "package": {
                 "name": "tcpdf/tcpdf",
-                "version": "5.9.206",
+                "version": "6.0.010",
                 "dist": {
-                    "url": "http://downloads.sourceforge.net/project/tcpdf/tcpdf_5_9_206.zip",
+                    "url": "http://downloads.sourceforge.net/project/tcpdf/tcpdf_6_0_010.zip",
                     "type": "zip"
                 },
                 "autoload": {
