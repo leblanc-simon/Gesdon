@@ -12,6 +12,15 @@
             "role": "Developer"
         }
     ],
+    
+    "type": "application",
+    
+    "autoload": {
+        "psr-0": {
+            "Gesdon": "lib/",
+            "Gesdon\\Database": "lib/model/classes/"
+        }
+    },
 
     "require": {
         "silex/silex": "1.0.*",
@@ -32,7 +41,9 @@
         
         "tcpdf/tcpdf": "5.9.206",
         
-        "propel/propel1": "1.6.*"
+        "propel/propel1": "1.6.*",
+        
+        "framasoft/opencmcicaction": "*"
     },
     
     "repositories": [
@@ -65,6 +76,10 @@
                     ]
                 }
             }
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/leblanc-simon/OpenCmcicAction.git"
         }
     ],
 

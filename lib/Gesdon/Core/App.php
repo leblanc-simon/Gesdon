@@ -28,6 +28,8 @@ class App
     $application = new ConsoleApplication();
     $application->add(new \Gesdon\Task\SendRecu);
     $application->add(new \Gesdon\Task\SendSingleRecu);
+    $application->add(new \Gesdon\Task\Migrate);
+    $application->add(new \Gesdon\Task\MigrateBuildRecurrent);
     
     return $application;
   }
@@ -75,8 +77,6 @@ class App
   
   static private function autoload()
   {
-    Autoload::register();
-    
     require_once self::$vendor_dir.DIRECTORY_SEPARATOR.'autoload.php';
     \Propel::init(self::$config_dir.DIRECTORY_SEPARATOR.'Gesdon-conf.php');
   }

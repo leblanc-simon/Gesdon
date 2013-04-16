@@ -16,38 +16,66 @@ use Gesdon\Database\PaypalInfo;
 use Gesdon\Database\PaypalInfoPeer;
 use Gesdon\Database\PaypalInfoQuery;
 
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
 class Migrate extends BaseTask
 {
-  /**
-   * Connexion PDO
-   * @var     PDO
-   * @access  private
-   */
-  private $con = null;
+  protected $process_cmcic = false;
+  protected $process_cmcic_recurrent = false;
+  protected $process_paypal = false;
+  protected $process_cheques = false;
+  protected $process_virements = false;
   
   /**
-   * Constructeur
-   *
-   * @param   array   $args   Les arguments de la tâche
-   * @access  public
-   * @see     BaseTask::__construct
+   * Configuration de la tâche
    */
-  public function __construct($args = array())
+  protected function configure()
   {
-    parent::__construct($args);
+    $this
+          ->setName('migrate:data')
+          ->setDescription('Récupérer les données d\'autres sources pour les insérer dans la base de données de Gesdon')
+          ->addOption('cmcic', null, InputOption::VALUE_NONE, 'Traiter les données du CMCIC', null)
+          ->addOption('cmcic-recurrent', null, InputOption::VALUE_NONE, 'Traiter les données du CMCIC (dons récurrent)', null)
+          ->addOption('paypal', null, InputOption::VALUE_NONE, 'Traiter les données de Paypal', null)
+          ->addOption('cheques', null, InputOption::VALUE_NONE, 'Traiter les données de chèques', null)
+          ->addOption('virements', null, InputOption::VALUE_NONE, 'Traiter les données de virement', null);
   }
   
+  
   /**
-   * Lancement de la tâche
+   * Execution de la tâche
    *
-   * @access  public
+   * @param   \Symfony\Component\Console\Input\InputInterface   $input  les entrées de la console
+   * @param   \Symfony\Component\Console\Output\OutputInterface $output les sortie de la console
+   * @access  protected
    */
-  public function run()
+  protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $this->processCmcic();
-    $this->processCmcicRecurrent();
-    $this->processPaypal();
-    $this->processCheques();
+    $this->setOutput($output);
+    
+    $this->process_cmcic            = $input->getOption('cmcic');
+    $this->process_cmcic_recurrent  = $input->getOption('cmcic-recurrent');
+    $this->process_paypal           = $input->getOption('paypal');
+    $this->process_cheques          = $input->getOption('cheques');
+    $this->process_virements        = $input->getOption('virements');
+    
+    if ($this->process_cmcic === true) {
+      $this->processCmcic();
+    }
+    if ($this->process_cmcic_recurrent === true) {
+      $this->processCmcicRecurrent();
+    }
+    if ($this->process_paypal === true) {
+      $this->processPaypal();
+    }
+    if ($this->process_cheques === true) {
+      $this->processCheques();
+    }
+    if ($this->process_virements === true) {
+      $this->processVirements();
+    }
   }
   
   
@@ -63,7 +91,7 @@ class Migrate extends BaseTask
     $stmt->execute();
     
     while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-      $this->logSection(__METHOD__, 'Traitement de la ligne '.$row['id']);
+      $this->log('Traitement de la ligne '.$row['id']);
       
       try {
         $this->getConnection()->beginTransaction();
@@ -127,7 +155,7 @@ class Migrate extends BaseTask
         $this->getConnection()->commit();
       } catch (\Exception $e) {
         $this->getConnection()->rollBack();
-        $this->logSection(__METHOD__, 'Erreur dans le traitement de la ligne '.$row['id'].' - '.$e->getMessage(), BaseTask::ERROR);
+        $this->log('Erreur dans le traitement de la ligne '.$row['id'].' - '.$e->getMessage(), 'error');
       }
     }
   }
@@ -144,13 +172,13 @@ class Migrate extends BaseTask
     
     $handle = fopen($filename, 'rb');
     if ($handle === false) {
-      $this->logSection(__METHOD__, 'Impossible d\'ouvrir le fichier '.$filename, BaseTask::ERROR);
+      $this->log('Impossible d\'ouvrir le fichier '.$filename, 'error');
       return;
     }
     
     $i = 0;
     while ($datas = fgetcsv($handle, 1000, ',', '"')) {
-      $this->logSection(__METHOD__, 'Traitement de la ligne '.(++$i));
+      $this->log('Traitement de la ligne '.(++$i));
       try {
         $don = new Don();
         $don->setIdentPaiement($datas[1]);
@@ -162,7 +190,7 @@ class Migrate extends BaseTask
         $don->setFrais(0);
         $don->save();
       } catch (\Exception $e) {
-        $this->logSection(__METHOD__, 'Erreur dans le traitement de la ligne '.$i.' - '.$e->getMessage(), BaseTask::ERROR);
+        $this->log('Erreur dans le traitement de la ligne '.$i.' - '.$e->getMessage(), 'error');
       }
     }
   }
@@ -179,7 +207,7 @@ class Migrate extends BaseTask
     
     $handle = fopen($filename, 'rb');
     if ($handle === false) {
-      $this->logSection(__METHOD__, 'Impossible d\'ouvrir le fichier '.$filename, BaseTask::ERROR);
+      $this->log('Impossible d\'ouvrir le fichier '.$filename, 'error');
       return;
     }
     
@@ -189,7 +217,7 @@ class Migrate extends BaseTask
     );
     $i = 0;
     while ($datas = fgetcsv($handle, 1000, ',', '"')) {
-      $this->logSection(__METHOD__, 'Traitement de la ligne '.(++$i));
+      $this->log('Traitement de la ligne '.(++$i));
       
       foreach ($datas as $key => $value) {
         if (\Gesdon\Utils\sfStringPP::isUtf8($value) === false) {
@@ -200,19 +228,19 @@ class Migrate extends BaseTask
       try {
         if (in_array($datas[4], $available_type) === false) {
           // On ne traite que les dons
-          $this->logSection(__METHOD__, 'On ne traite par la ligne (pas un don) '.($i).' : '.$datas[4]);
+          $this->log('On ne traite par la ligne (pas un don) '.($i).' : '.$datas[4]);
           continue;
         }
         
         if ($datas[5] !== 'Terminé') {
           // On ne traite que les dons terminés
-          $this->logSection(__METHOD__, 'On ne traite par la ligne (non terminé) '.($i).' : '.$datas[5]);
+          $this->log('On ne traite par la ligne (non terminé) '.($i).' : '.$datas[5]);
           continue;
         }
         
         if ($datas[7] !== 'EUR') {
           // On ne traite pas les paiements qui ne sont pas en euros
-          $this->logSection(__METHOD__, 'On ne traite par la ligne (pas en euros) '.($i).' : '.$datas[7]);
+          $this->log('On ne traite par la ligne (pas en euros) '.($i).' : '.$datas[7]);
           continue;
         }
         
@@ -276,7 +304,7 @@ class Migrate extends BaseTask
         
         $this->getConnection()->commit();
       } catch (\Exception $e) {
-        $this->logSection(__METHOD__, 'Erreur dans le traitement de la ligne '.$i.' - '.$e->getMessage(), BaseTask::ERROR);
+        $this->log('Erreur dans le traitement de la ligne '.$i.' - '.$e->getMessage(), 'error');
         $this->getConnection()->rollBack();
       }
     }
@@ -321,24 +349,57 @@ class Migrate extends BaseTask
    */
   private function processCheques()
   {
-    $filename = \Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'cheques.csv';
+    $this->log('begin');
+    
+    $this->processCsv(\Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'cheques.csv', 'CHQ_', DonPeer::CHEQUE);
+    
+    $this->log('end');
+  }
+  
+  
+  /**
+   * Traitement des données concernant les virement (import par CSV)
+   *
+   * @access  private
+   */
+  private function processVirements()
+  {
+    $this->log('begin');
+    
+    $this->processCsv(\Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'virements.csv', 'VIR_', DonPeer::VIREMENT);
+    
+    $this->log('end');
+  }
+  
+  
+  /**
+   * Traitement des données importé par CSV
+   *
+   * @param   string  $filename       le nom du fichier à traiter
+   * @param   string  $prepend_ident  la chaine préfixant l'identifiant de paiement
+   * @param   string  $moyen_paiement le moyen de paiement utilisé
+   * @access  private
+   */
+  private function processCsv($filename, $prepend_ident, $moyen_paiement)
+  {
+    $this->log('begin');
     
     $handle = fopen($filename, 'rb');
     if ($handle === false) {
-      $this->logSection(__METHOD__, 'Impossible d\'ouvrir le fichier '.$filename, BaseTask::ERROR);
+      $this->log('Impossible d\'ouvrir le fichier '.$filename, 'error');
       return;
     }
     
     $i = 0;
     while ($datas = fgetcsv($handle, 1000, ',', '"')) {
-      $this->logSection(__METHOD__, 'Traitement de la ligne '.(++$i));
+      $this->log('Traitement de la ligne '.(++$i));
       
       try {
         if (isset($datas[8])) {
           $special = trim($datas[8]);
           if (empty($special) === false) {
              // On ne traite pas les paiements qui ne sont pas en euros
-            $this->logSection(__METHOD__, 'On ne traite par la ligne '.($i).' : '.$special);
+            $this->log('On ne traite par la ligne '.($i).' : '.$special);
             continue;
           }
         }
@@ -354,7 +415,7 @@ class Migrate extends BaseTask
         $email = trim($datas[5]);
         $date = preg_replace('/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})/', '\3-\2-\1', trim($datas[7]));
         $montant = \Gesdon\Utils\Currency::convertCurrency(trim($datas[6]));
-        $ident_paiement = 'CHQ_'.sha1(rand(0, 9999999).uniqid().microtime());
+        $ident_paiement = $prepend_ident.sha1(rand(0, 9999999).uniqid().microtime());
         
         $donateur = new Donateur();
         $donateur->setNom($nom);
@@ -373,8 +434,8 @@ class Migrate extends BaseTask
         $don = new Don();
         $don->setIdentPaiement($ident_paiement);
         $don->setMontant($montant);
-        $don->setVia(DonPeer::CHEQUE);
-        $don->setMoyenPaiement(DonPeer::CHEQUE);
+        $don->setVia($moyen_paiement);
+        $don->setMoyenPaiement($moyen_paiement);
         $don->setStatutPaiement(DonPeer::STATUT_OK);
         $don->setDatePaiement($date);
         $don->setFrais(0);
@@ -382,25 +443,11 @@ class Migrate extends BaseTask
         
         $this->getConnection()->commit();
       } catch (\Exception $e) {
-        $this->logSection(__METHOD__, 'Erreur dans le traitement de la ligne '.$i.' - '.$e->getMessage(), BaseTask::ERROR);
+        $this->log('Erreur dans le traitement de la ligne '.$i.' - '.$e->getMessage(), 'error');
         $this->getConnection()->rollBack();
       }
     }
-  }
-  
-  
-  /**
-   * Récupère une connexion à la base de données
-   *
-   * @return  PDO   une connexion à la base de données
-   * @access  private
-   */
-  private function getConnection()
-  {
-    if ($this->con === null) {
-      $this->con = \Propel::getConnection(DonPeer::DATABASE_NAME, \Propel::CONNECTION_WRITE);
-    }
     
-    return $this->con;
+    $this->log('end');
   }
 }

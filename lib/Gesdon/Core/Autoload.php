@@ -18,6 +18,7 @@ class Autoload
    */
   static public function autoloader($class)
   {
+    return;
     // Si ce n'est pas Gesdon, on ne s'en occupe pas
     if (strpos($class, 'Gesdon') !== 0) {
       return;
