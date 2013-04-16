@@ -39,7 +39,7 @@
 
         "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
         
-        "tcpdf/tcpdf": "6.0.010",
+        "tcpdf/tcpdf": "dev-master",
         
         "propel/propel1": "1.6.*",
         
@@ -47,36 +47,6 @@
     },
     
     "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "tcpdf/tcpdf",
-                "version": "6.0.010",
-                "dist": {
-                    "url": "http://downloads.sourceforge.net/project/tcpdf/tcpdf_6_0_010.zip",
-                    "type": "zip"
-                },
-                "autoload": {
-                    "classmap": [
-                        "fonts",
-                        "config/lang",
-                        "config",
-                        "2dbarcodes.php",
-                        "barcodes.php",
-                        "datamatrix.php",
-                        "encodings_maps.php",
-                        "htmlcolors.php",
-                        "pdf417.php",
-                        "qrcode.php",
-                        "spotcolors.php",
-                        "tcpdf.php",
-                        "tcpdf_filters.php",
-                        "tcpdf_parser.php",
-                        "unicode_data.php"
-                    ]
-                }
-            }
-        },
         {
             "type": "git",
             "url": "https://github.com/leblanc-simon/OpenCmcicAction.git"
