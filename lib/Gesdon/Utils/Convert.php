@@ -33,9 +33,7 @@ class Convert
       $con->beginTransaction();
 
       $recu_fiscal = RecuFiscalQuery::create()
-                                    ->filterByNom($donateur->getNom())
-                                    ->filterByPrenom($donateur->getPrenom())
-                                    ->filterByEmail($donateur->getEmail())
+                                    ->filterByIdentPaiement($donateur->getIdentPaiement())
                                     ->filterByDateDonDebut($debut)
                                     ->filterByDateDonFin($fin)
                                     ->findOneOrCreate();
@@ -46,6 +44,7 @@ class Convert
         $recu_fiscal->setEnvoye(false);
       }
       $recu_fiscal->setDateCreation(new \DateTime());
+      $recu_fiscal->setIdentPaiement($donateur->getIdentPaiement());
       $recu_fiscal->setNom($donateur->getNom());
       $recu_fiscal->setPrenom($donateur->getPrenom());
       $recu_fiscal->setEmail($donateur->getEmail());

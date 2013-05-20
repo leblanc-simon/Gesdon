@@ -73,6 +73,7 @@
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
     <column name="numero" type="INTEGER"/>
     <column name="date_creation" type="TIMESTAMP"/>
+    <column name="ident_paiement" type="VARCHAR" size="255"/>
     <column name="nom" type="VARCHAR" size="255"/>
     <column name="prenom" type="VARCHAR" size="255"/>
     <column name="email" type="VARCHAR" size="255"/>
