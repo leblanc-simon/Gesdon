@@ -31,7 +31,7 @@
                             <td>{{ don.montant }}</td>
                             <td>{{ don.getDatePaiement(null)|date }}</td>
                             <td>
-                                <a href="" class="btn btn-warning">
+                                <a href="{{ path('don', {"id": don.id}) }}" class="btn btn-warning">
                                     <i class=""></i>
                                     Modifier
                                 </a>

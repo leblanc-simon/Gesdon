@@ -1,0 +1,8 @@
+{% extends "Dons.html.twig" %}
+
+            {% block content %}
+                <form action="{{ path('don_save', {"id": don.id}) }}" method="post" class="form-don">
+                    {{ form_widget(form) }}
+                    <input type="submit" value="Enregistrer" />
+                </form>
+            {% endblock %}

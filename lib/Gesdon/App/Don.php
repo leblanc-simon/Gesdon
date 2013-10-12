@@ -13,11 +13,11 @@ class Don extends Main
     public function executeGet()
     {
         $id = (int)$this->request->get('id', 0);
-        
-        $this->don = DonQuery::create()->flterById($id)->findOneOrCreate();
-        
+
+        $this->don = DonQuery::create()->filterById($id)->findOneOrCreate();
+
         $this->donateur = $this->don->getDonateur();
-        
+
         $form = $this->getForm();
         
         return $this->render(array('don' => $this->don, 'form' => $form->createView()));
@@ -26,12 +26,20 @@ class Don extends Main
     
     public function executePost()
     {
+        $id = (int)$this->request->get('id', 0);
+
+        $this->don = DonQuery::create()->filterById($id)->findOneOrCreate();
+
+        $this->donateur = $this->don->getDonateur();
+
         $form = $this->getForm();
-        
+
         $form->bind($this->request);
         
         if ($form->isValid()) {
             $form = $form->getData();
+
+            $htis->don->setMontant($form['montant']);
         }
         
         return $this->getApp()->redirect('dons');
@@ -91,6 +99,11 @@ class Don extends Main
                             'required' => true,
                             'label' => 'Type de donateur',
                             'choices' => array('Personnel' => 'Personnel', 'Entreprise' => 'Entreprise'),
+                        ))
+                        ->add('montant', 'money', array(
+                            'data' => $this->don->getMontant(),
+                            'required' => true,
+                            'label' => 'Montant du don',
                         ))
                         ->getForm();
     }
