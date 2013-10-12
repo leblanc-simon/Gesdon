@@ -1,0 +1,98 @@
+html, body {
+    height: 100%;
+}
+
+/****************************************
+ *
+ *  Style par défaut
+ *
+ ****************************************/
+.block-detail {
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 4px 4px 4px;
+    padding: 39px 19px 14px;
+    position: relative;
+    text-align: left;
+    margin-top: 2em;
+}
+
+.block-detail:after {
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 0 4px 0;
+    color: #9DA0A4;
+    font-size: 12px;
+    font-weight: bold;
+    left: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    top: -1px;
+}
+
+
+/****************************************
+ *
+ *  Recherche
+ *
+ ****************************************/
+.search {
+    margin-bottom: 1em;
+}
+
+.search:after {
+    content: "Rechercher";
+}
+
+.search #form > div {
+    width: 50%;
+    float: left;
+}
+
+
+/****************************************
+ *
+ *  Footer
+ *
+ ****************************************/
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by it's height */
+    margin: 0 auto -20px;
+}
+
+#push,
+footer {
+  height: 20px;
+}
+
+footer {
+  background-color: #f5f5f5;
+  text-align: center;
+}
+
+/****************************************
+ *
+ *  Formulaire
+ *
+ ****************************************/
+.control-group input[type="text"],
+.control-group input[type="date"],
+.control-group input[type="email"] {
+    width: 350px;
+}
+
+.control-group select {
+    width: 365px;
+}
+
+.span12.control-group textarea {
+    width:90%;
+}
+
+.block-description .span12.control-group textarea {
+    height: 150px;
+}
+

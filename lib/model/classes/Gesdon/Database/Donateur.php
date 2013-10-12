@@ -4,7 +4,6 @@ namespace Gesdon\Database;
 
 use Gesdon\Database\om\BaseDonateur;
 
-
 /**
  * Skeleton subclass for representing a row from the 'donateur' table.
  *
@@ -16,6 +15,13 @@ use Gesdon\Database\om\BaseDonateur;
  *
  * @package    propel.generator.Gesdon.Database
  */
-class Donateur extends BaseDonateur {
-
+class Donateur extends BaseDonateur
+{
+    public function getFirstDon()
+    {
+        return DonQuery::create()
+                ->filterByIdentPaiement($this->getIdentPaiement())
+                ->orderByDatePaiement()
+                ->findOne();
+    }
 } // Donateur

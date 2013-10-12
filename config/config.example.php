@@ -7,6 +7,8 @@
   'img_signature'   => \Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'img_pdf'.DIRECTORY_SEPARATOR.'signature.jpg',
   'img_license'     => \Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'img_pdf'.DIRECTORY_SEPARATOR.'licence.jpg',
   'img_logo'        => \Gesdon\Core\Config::get('data_dir').DIRECTORY_SEPARATOR.'img_pdf'.DIRECTORY_SEPARATOR.'logo_framasoft_HD.jpg',
+  'pagination_nb_item' => 20,
+  'locale'          => 'fr_FR',
   'smtp'            => false,
   'smtp_server'     => null,
   'smtp_port'       => null,

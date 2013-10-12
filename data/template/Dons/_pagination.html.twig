@@ -1,0 +1,16 @@
+
+                <div class="row">
+                    <div class="pagination pagination-centered pagination-large">
+                        <ul>
+                        {% if not dons.isFirstPage() %}
+                            <li><a href="{{ url('dons', { page: dons.getFirstPage() }) }}">&laquo;</a></li>
+                        {% endif %}
+                        {% for link in dons.getLinks(10) %}
+                            <li class="{% if link == page %}disabled{% endif %}"><a href="{{ url('dons', { page: link }) }}">{{ link }}</a></li>
+                        {% endfor %}
+                        {% if not dons.isLastPage() %}
+                            <li><a href="{{ url('dons', { page: dons.getLastPage() }) }}">&raquo;</a></li>
+                        {% endif %}
+                        </ul>
+                    </div>
+                </div>

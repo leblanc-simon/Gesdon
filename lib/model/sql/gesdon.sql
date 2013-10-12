@@ -25,11 +25,7 @@ CREATE TABLE `donateur`
     `date_creation` DATETIME,
     `type_donateur` VARCHAR(255),
     PRIMARY KEY (`id`),
-    INDEX `donateur_ident_paiement` (`ident_paiement`),
-    CONSTRAINT `Rel_don_donateur`
-        FOREIGN KEY (`ident_paiement`)
-        REFERENCES `don` (`ident_paiement`)
-        ON DELETE SET NULL
+    INDEX `donateur_ident_paiement` (`ident_paiement`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------

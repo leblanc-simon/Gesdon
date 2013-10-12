@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Arrivée à expiration de votre carte bancaire</title>
+    </head>
+    <body>
+        <p>Bonjour {{ prenom }} {{ nom }},</p>
+        <p>
+            votre don récurrent effectué par carte bancaire le {{ date_paiement }} va bientôt s'arrêter.
+            En effet, votre carte bancaire arrive à expiration à la fin du mois de {{ date_expiration }}.
+        </p>
+        <p>
+            Nous vous remercions pour votre soutien. Si vous souhaitez le renouveller, n'hésitez pas à vous rendre sur
+            le site <a href="http://soutenir.framasoft.org">Soutenir de Framasoft</a>.
+        </p>
+        <p>
+            Cordialement,<br />
+            L'équipe de Framasoft
+        </p>
+    </body>
+</html>

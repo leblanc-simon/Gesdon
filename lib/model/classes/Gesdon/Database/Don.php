@@ -16,6 +16,15 @@ use Gesdon\Database\om\BaseDon;
  *
  * @package    propel.generator.Gesdon.Database
  */
-class Don extends BaseDon {
-
+class Don extends BaseDon
+{
+    /**
+     * Get the donateur related to the don
+     *
+     * @return      Donateur
+     */
+    public function getDonateur()
+    {
+        return DonateurQuery::create()->filterByIdentPaiement($this->getIdentPaiement())->findOne();
+    }
 } // Don

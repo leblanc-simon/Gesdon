@@ -39,7 +39,7 @@
 
         "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
         
-        "tcpdf/tcpdf": "dev-master",
+        "tecnick.com/tcpdf": "dev-master",
         
         "propel/propel1": "1.6.*",
         

@@ -17,6 +17,9 @@
     <index name="donateur_ident_paiement">
       <index-column name="ident_paiement"/>
     </index>
+    <foreign-key foreignTable="don" name="Rel_don_donateur" onDelete="setnull">
+      <reference local="ident_paiement" foreign="ident_paiement"/>
+    </foreign-key>
   </table>
   <table name="don">
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
@@ -62,6 +65,8 @@
     <column name="annulation" type="BOOLEAN"/>
     <column name="lib_annulation" type="VARCHAR" size="255"/>
     <column name="date_annulation" type="TIMESTAMP"/>
+    <column name="nb_relance" type="INTEGER"/>
+    <column name="last_relance" type="TIMESTAMP"/>
     <foreign-key foreignTable="don" name="Rel_don_cmcic_info" onDelete="cascade">
       <reference local="don_id" foreign="id"/>
     </foreign-key>
