@@ -101,6 +101,8 @@ CREATE TABLE `cmcic_info`
     `annulation` TINYINT(1),
     `lib_annulation` VARCHAR(255),
     `date_annulation` DATETIME,
+    `nb_relance` INTEGER,
+    `last_relance` DATETIME,
     PRIMARY KEY (`id`),
     INDEX `FI__don_cmcic_info` (`don_id`),
     INDEX `FI__donateur_cmcic_info` (`donateur_id`),
@@ -163,6 +165,23 @@ CREATE TABLE `recu_fiscal_has_don`
         FOREIGN KEY (`recu_fiscal_id`)
         REFERENCES `recu_fiscal` (`id`)
         ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- task_manager
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `task_manager`;
+
+CREATE TABLE `task_manager`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `task_name` VARCHAR(255) NOT NULL,
+    `param` TEXT NOT NULL,
+    `date_to_execute` DATETIME NOT NULL,
+    `executed` TINYINT(1) DEFAULT 0,
+    `executed_at` DATETIME,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier

@@ -36,6 +36,7 @@ class App
     $application->add(new \Gesdon\Task\Migrate);
     $application->add(new \Gesdon\Task\MigrateBuildRecurrent);
     $application->add(new \Gesdon\Task\Revival);
+    $application->add(new \Gesdon\Task\Manager);
     
     return $application;
   }

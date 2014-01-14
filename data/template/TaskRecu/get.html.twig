@@ -1,0 +1,23 @@
+{% extends "Task.html.twig" %}
+
+            {% block content %}
+                <form action="" method="post">
+                    <div class="row">
+                        <p>
+                            Pour quelle période souhaitez-vous envoyer les reçus ?
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="span6">
+                            <label for="begin">Date de début</label>
+                            <input type="date" name="begin" value="{begin}" />
+                        </div>
+                    </div>
+                    <div class="">
+                        <button type="submit" name="launch_send" class="btn">
+                            <i class=""></i>
+                            Envoyer les reçus
+                        </button>
+                    </div>
+                </form>
+            {% endblock %}

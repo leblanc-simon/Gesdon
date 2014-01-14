@@ -3,6 +3,6 @@
             {% block content %}
                 <form action="{{ path('don_save', {"id": don.id}) }}" method="post" class="form-don">
                     {{ form_widget(form) }}
-                    <input type="submit" value="Enregistrer" />
+                    <input type="submit" value="Enregistrer" class="btn btn-primary" />
                 </form>
             {% endblock %}

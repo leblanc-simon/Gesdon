@@ -104,4 +104,12 @@
       <reference local="recu_fiscal_id" foreign="id"/>
     </foreign-key>
   </table>
+  <table name="task_manager">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+    <column name="task_name" type="VARCHAR" size="255" required="true" />
+    <column name="param" type="LONGVARCHAR" required="true" />
+    <column name="date_to_execute" type="TIMESTAMP" required="true" />
+    <column name="executed" type="BOOLEAN" default="0" />
+    <column name="executed_at" type="TIMESTAMP" />
+  </table>
 </database>

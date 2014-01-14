@@ -22,14 +22,29 @@ $routing = array(
     ),
     
     // Page des donateurs
-    'donateur/{id}' => array(
+    '/donateur/{id}' => array(
         'class' => 'Donateur',
         'name' => 'donateur'
     ),
     
     // Page des tâches
-    'taches' => array(
+    '/taches' => array(
         'class' => 'Task',
         'name' => 'task',
+    ),
+    '/taches/recus' => array(
+        'class' => 'TaskRecu',
+        'name' => 'task_recus'
+    ),
+    '/taches/cartes' => array(
+        'class' => 'TaskCard',
+        'name' => 'task_card'
+    ),
+
+
+    // Page d'envoi des reçus
+    '/recus/{id}' => array(
+        'class' => 'Recu',
+        'name' => 'recu',
     ),
 );

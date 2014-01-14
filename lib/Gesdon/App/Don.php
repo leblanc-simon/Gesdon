@@ -58,6 +58,7 @@ class Don extends Main
                             'data' => $this->donateur->getNom(),
                             'required' => true,
                             'label' => 'Nom',
+                            'class' => ''
                         ))
                         ->add('prenom', 'text', array(
                             'data' => $this->donateur->getPrenom(),
