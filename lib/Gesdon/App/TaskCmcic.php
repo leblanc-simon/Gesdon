@@ -38,7 +38,7 @@ class TaskCmcic extends Main
                 }
             }
 
-            $group_name = sha1(uniqid('task', true).mt_rand(0, 999999));
+            $group_name = date('Ymdhis').sha1(uniqid('task', true).mt_rand(0, 999999));
 
             // Add import CMCIC website data in CSV file
             TaskManagerPeer::add('migrate:build-recurrent', $params, $group_name, 0);
