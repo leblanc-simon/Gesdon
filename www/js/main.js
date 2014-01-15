@@ -16,5 +16,32 @@ $(document).ready(function(){
     $('#push > .alert').each(function(){
         setTimeout(closeAlert, timer, this);
         timer += 1000;
-    })
+    });
+
+    var current_form = null;
+    $('form.delete-task').on('submit', function(){
+        if (current_form !== null) {
+            return true;
+        }
+
+        current_form = this;
+
+        if ($(this).find('input[type=submit]').hasClass('task-grouped')) {
+            $('#delete-modal .modal-alert').html('<b>Attention, il s\'agit d\'une tâche groupée, l\'ensemble des tâches liées seront également supprimées</b>');
+        }
+
+        $('#delete-modal').modal('show');
+
+        $('#delete-modal').on('hidden.bs.modal', function(e){
+            current_form = null;
+            $('#delete-modal .modal-alert').html('');
+        });
+
+
+        return false;
+    });
+
+    $('#delete-modal button.btn-danger').on('click', function(){
+        current_form.submit();
+    });
 });

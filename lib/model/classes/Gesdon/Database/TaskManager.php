@@ -18,4 +18,18 @@ use Gesdon\Database\om\BaseTaskManager;
  */
 class TaskManager extends BaseTaskManager
 {
+    public function getParamToString()
+    {
+        $params = json_decode($this->getParam());
+        if (false === $params) {
+            return null;
+        }
+
+        $string = '';
+        foreach ($params as $key => $value) {
+            $string .= (empty($string) ? '' : ', ').$key.' = '.$value;
+        }
+
+        return $string;
+    }
 }
