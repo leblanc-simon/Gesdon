@@ -1,18 +1,42 @@
 {% extends "Task.html.twig" %}
 
             {% block content %}
-                <form action="" method="post">
-                    <div class="">
-                        <button type="submit" name="launch_expiration" class="btn">
-                            <i class=""></i>
-                            Relance des donateurs dont la carte à expirer
-                        </button>
-                    </div>
-                    <div class="">
-                        <button type="submit" name="launch_send" class="btn">
-                            <i class=""></i>
-                            Envoyer les reçus
-                        </button>
-                    </div>
-                </form>
+
+                <div class="page-header">
+                    <h1>Liste des tâches</h1>
+                </div>
+                <dl>
+                    <dt>
+                        <a href="{{ url('task_card') }}">Relance</a>
+                    </dt>
+                    <dd>
+                        Affiche une interface permettant de sélectionner les donateurs pour lesquels on souhaite
+                        envoyer un mail de relance car leur carte a expiré.
+                    </dd>
+                    <dt>
+                        <a href="{{ url('task_recus') }}">Envoi</a>
+                    </dt>
+                    <dd>
+                        Envoyer les reçus pour une période sélectionnée
+                    </dd>
+                    <dt>
+                        <a href="{{ url('task_paypal') }}">Import Paypal</a>
+                    </dt>
+                    <dd>
+                        Importer les fichiers CSV de Paypal
+                    </dd>
+                    <dt>
+                        <a href="{{ url('task_cmcic') }}">Import Crédit Mutuel</a>
+                    </dt>
+                    <dd>
+                        Récupérer les informations des dons par carte bancaire reçus sur le Crédit Mutuel
+                    </dd>
+                    <dt>
+                        <a href="{{ url('task_launch') }}">Lancer les tâches</a>
+                    </dt>
+                    <dd>
+                        Lancer l'ensemble des tâches en attente
+                    </dd>
+                </dl>
+                </div>
             {% endblock %}

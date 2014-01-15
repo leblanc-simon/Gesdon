@@ -111,5 +111,7 @@
     <column name="date_to_execute" type="TIMESTAMP" required="true" />
     <column name="executed" type="BOOLEAN" default="0" />
     <column name="executed_at" type="TIMESTAMP" />
+    <column name="group" type="VARCHAR" size="255" />
+    <column name="position" type="INTEGER" />
   </table>
 </database>

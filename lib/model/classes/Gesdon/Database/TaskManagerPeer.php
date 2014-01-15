@@ -21,11 +21,13 @@ class TaskManagerPeer extends BaseTaskManagerPeer
     /**
      * Add a task in the task manager
      *
-     * @param $task_name    Name of the task to add
-     * @param array $params The parameter to use for the task
+     * @param   string  $task_name  Name of the task to add
+     * @param   array   $params     The parameter to use for the task
+     * @param   string  $group      The group name to group task
+     * @param   int     $position   The position of the task in the group
      * @return TaskManager The task manager created
      */
-    static public function add($task_name, array $params = array())
+    static public function add($task_name, array $params = array(), $group = null, $position = null)
     {
         $manager = new TaskManager();
         $manager->setTaskName($task_name);
@@ -33,6 +35,8 @@ class TaskManagerPeer extends BaseTaskManagerPeer
         $manager->setDateToExecute(new \DateTime());
         $manager->setExecuted(false);
         $manager->setExecutedAt(null);
+        $manager->setGroup($group);
+        $manager->setPosition($position);
         $manager->save();
 
         return $manager;

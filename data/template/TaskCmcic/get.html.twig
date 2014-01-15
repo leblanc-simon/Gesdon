@@ -1,0 +1,40 @@
+{% extends "Task.html.twig" %}
+
+{% block title %}Gesdon &bull; Import Crédit Mutuel{% endblock %}
+
+            {% block content %}
+
+                <div class="page-header">
+                    <h1>Importer les données du Crédit Mutuel</h1>
+                </div>
+                <div class="alert alert-info">
+                    <i class="glyphicon glyphicon-bullhorn"></i>
+                    <b>Attention :</b> Une restriction au niveau du Crédit Mutuel empêche d'importer une trop longue période, ne dépassez pas les 4 mois...
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        Pour quelle période souhaitez-vous récupérer les dons sur le Crédit Mutuel ?
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="{{ url('task_cmcic') }}" method="post" role="form">
+                                <div class="form-group">
+                                    <label for="begin">Date de début</label>
+                                    <input type="date" id="begin" name="begin" value="{{ begin.format('Y-m-d') }}" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="end">Date de fin</label>
+                                    <input type="date" id="end" name="end" value="{{ end.format('Y-m-d') }}" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" name="import" class="btn btn-success">
+                                        <i class="glyphicon glyphicon-import"></i>
+                                        Importer
+                                    </button>
+                                </div>
+                        </form>
+                    </div>
+                </div>
+            {% endblock %}

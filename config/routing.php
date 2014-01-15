@@ -40,6 +40,18 @@ $routing = array(
         'class' => 'TaskCard',
         'name' => 'task_card'
     ),
+    '/taches/paypal' => array(
+        'class' => 'TaskPaypal',
+        'name' => 'task_paypal',
+    ),
+    '/taches/cmcic' => array(
+        'class' => 'TaskCmcic',
+        'name' => 'task_cmcic',
+    ),
+    '/taches/lancer' => array(
+        'class' => 'TaskLaunch',
+        'name' => 'task_launch',
+    ),
 
 
     // Page d'envoi des reçus
