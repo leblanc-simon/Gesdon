@@ -1,0 +1,14 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Gesdon &bull; Exception générale{% endblock %}
+
+            {% block content %}
+
+                <div class="page-header">
+                    <h1>Exception générale</h1>
+                </div>
+                <div class="alert alert-danger">
+                    <i class="glyphicon glyphicon-remove-circle"></i>
+                    <b>Une erreur est survenue :</b> {{ error_message }}
+                </div>
+            {% endblock %}

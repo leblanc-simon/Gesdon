@@ -41,6 +41,9 @@ class Controller
         
         // Sessions
         $this->configureSession();
+
+        // Error handler
+        $this->configureError();
         
         // Load routing file
         $routing_file = Config::get('config_dir').DIRECTORY_SEPARATOR.'routing.php';
@@ -117,6 +120,20 @@ class Controller
         $this->application->register(new \Silex\Provider\SessionServiceProvider(), array(
             
         ));
+    }
+
+
+    private function configureError()
+    {
+        $app = $this->application;
+
+        $app->error(function(\Exception $e) use ($app) {
+            if (Config::get('debug', false) === true) {
+                return;
+            }
+
+            return $app['twig']->render('Exception.html.twig', array('error_message' => $e->getMessage()));
+        });
     }
     
     public function getApplication()
