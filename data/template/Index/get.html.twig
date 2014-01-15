@@ -1,12 +1,21 @@
 {% extends "Index.html.twig" %}
 
             {% block content %}
-                <div class="">
-                    <a href="{{ url('dons') }}" class="btn btn-large">
-                        Liste des dons
-                    </a>
-                    <a href="{{ url('task') }}" class="btn btn-large">
-                        Lancement des tâches
-                    </a>
+
+                <div class="page-header">
+                    <h1>Accueil</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ url('dons') }}" class="btn btn-default btn-lg center-block" role="button">
+                            Liste des dons
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url('task') }}" class="btn btn-default btn-lg center-block" role="button">
+                            Lancement des tâches
+                        </a>
+                    </div>
                 </div>
             {% endblock %}
