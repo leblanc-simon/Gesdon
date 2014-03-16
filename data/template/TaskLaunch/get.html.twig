@@ -25,7 +25,7 @@
                                     <td>{{ task.taskName }}</td>
                                     <td>{{ task.getParamToString }}</td>
                                     <td>
-                                        <form action="{{ url('task_launch') }}" method="post" class="delete-task">
+                                        <form action="{{ url('task_launch') }}" method="delete" class="delete-task">
                                             <input type="hidden" name="id" value="{{ task.id }}" />
                                             <input type="submit" value="Supprimer la tâche" class="btn btn-danger{% if task.group %} task-grouped{% endif %}" />
                                         </form>
@@ -34,6 +34,21 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
+                    <div class="col-md-12">
+                        {% if is_running %}
+                        <button type="button" disabled="disabled" class="btn btn-success pull-right">
+                            <i class="glyphicon glyphicon-play"></i>
+                            Des tâches sont en cours
+                        </button>
+                        {% else %}
+                        <form action="{{ url('task_launch') }}" method="post" class="pull-right">
+                            <button type="submit" class="btn btn-success">
+                                <i class="glyphicon glyphicon-play"></i>
+                                Lancer les tâches en attente
+                            </button>
+                        </form>
+                        {% endif %}
                     </div>
                 </div>
 

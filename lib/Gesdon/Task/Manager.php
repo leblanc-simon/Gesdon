@@ -2,6 +2,7 @@
 
 namespace Gesdon\Task;
 
+use Gesdon\Core\Exception;
 use Gesdon\Database\TaskManagerQuery;
 use Gesdon\Core\Config;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -23,15 +24,29 @@ class Manager extends BaseTask
     /**
      * Execution de la tâche
      *
-     * @param   \Symfony\Component\Console\Input\InputInterface   $input  les entrées de la console
-     * @param   \Symfony\Component\Console\Output\OutputInterface $output les sortie de la console
+     * @param   InputInterface   $input  les entrées de la console
+     * @param   OutputInterface $output les sortie de la console
      * @access  protected
+     * @return  void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setOutput($output);
+        if (static::isRunning() === true) {
+            throw new Exception('Impossible to run manager twice!');
+        }
 
-        $this->runTasks();
+        file_put_contents(static::getPidFile(), getmypid());
+
+        try {
+            $this->setOutput($output);
+
+            $this->runTasks();
+
+            unlink(static::removePidFile());
+        } catch (\Exception $e) {
+            unlink(static::removePidFile());
+            throw $e;
+        }
     }
 
 
@@ -50,7 +65,12 @@ class Manager extends BaseTask
             try {
                 $command = $this->getApplication()->find($task->getTaskName());
                 if (null !== $command) {
-                    $input = new ArrayInput(json_decode($task->getParam()));
+                    $input = new ArrayInput(array_merge(
+                        array(
+                            'command' => $task->getTaskName()
+                        ),
+                        json_decode($task->getParam(), true)
+                    ));
                     if ($command->run($input, $this->getOutputStream()) === 0) {
                         $task->setExecuted(true);
                         $task->setExecutedAt(new \DateTime());
@@ -83,5 +103,35 @@ class Manager extends BaseTask
         }
 
         return $output;
+    }
+
+
+    static public function isRunning()
+    {
+        if (file_exists(static::getPidFile()) === false) {
+            return false;
+        }
+
+        $pid = file_get_contents(static::getPidFile());
+        $pids = explode("\n", trim(`ps -e | awk '{print $1}'`));
+        if(in_array($pid, $pids) === false) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    static private function getPidFile()
+    {
+        return Config::get('data_dir').'/task.pid';
+    }
+
+
+    static private function removePidFile()
+    {
+        if (file_exists(static::getPidFile()) === true) {
+            unlink(static::getPidFile());
+        }
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Gesdon\App;
 
+use Gesdon\Core\Config;
 use Gesdon\Database\TaskManagerPeer;
 use Gesdon\Database\TaskManagerQuery;
+use Gesdon\Task\Manager;
 
 class TaskLaunch extends Main
 {
@@ -17,10 +19,12 @@ class TaskLaunch extends Main
             ->orderByDateToExecute()
             ->find();
 
-        return $this->render(array('tasks' => $tasks));
+        $is_running = Manager::isRunning();
+
+        return $this->render(array('tasks' => $tasks, 'is_running' => $is_running));
     }
 
-    public function executePost()
+    public function executeDelete()
     {
         $id = (int)$this->request->get('id', 0);
         $task_manager = TaskManagerPeer::retrieveByPK($id);
@@ -45,8 +49,12 @@ class TaskLaunch extends Main
     }
 
 
-    public function executePut()
+    public function executePost()
     {
-        
+        $cmd = Config::get('base_dir').'/task/run.php manager:run > /dev/null 2>&1 &';
+
+        exec($cmd, $output, $return);
+
+        return $this->getApp()->redirect($this->url->generate('task'));
     }
 }

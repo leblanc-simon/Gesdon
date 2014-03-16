@@ -44,4 +44,34 @@ $(document).ready(function(){
     $('#delete-modal button.btn-danger').on('click', function(){
         current_form.submit();
     });
+
+    $('form[method=put], form[method=delete]').on('submit', function(){
+        var form = $(this);
+
+        $.ajax({
+            url: form.attr('action'),
+            method: form.attr('method'),
+            data: form.serialize(),
+            dataType: 'html',
+            statusCode: {
+                200: function(data, textStatus, jqXHR) {
+                    console.log(data);
+                },
+                301: function(jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                },
+                302: function(jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                },
+                404: function(jqXHR) {
+                    $('html').html(jqXHR.responseText);
+                },
+                500: function(jqXHR) {
+                    $('html').html(jqXHR.responseText);
+                }
+            }
+        });
+
+        return false;
+    });
 });
