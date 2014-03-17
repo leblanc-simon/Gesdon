@@ -17,6 +17,8 @@ abstract class Main
     protected $form;
     protected $url;
     protected $session;
+
+    protected $current_database;
     
     public function __construct(\Silex\Application $app)
     {
@@ -37,6 +39,14 @@ abstract class Main
         
         // Get the session
         $this->session = $this->app['session'];
+
+        // Get the current database
+        $propel_config = \Propel::getConfiguration();
+        if (preg_match('/dbname=([^;]+);?/', $propel_config['datasources']['gesdon']['connection']['dsn'], $matches) === 1) {
+            $this->current_database = $matches[1];
+        } else {
+            $this->current_database = null;
+        }
     }
     
     abstract public function executeGet();
@@ -64,7 +74,7 @@ abstract class Main
     
     protected function render($params = array())
     {
-        $params = array_merge(array('url' => $this->url), $params);
+        $params = array_merge(array('url' => $this->url, 'current_database' => $this->current_database), $params);
         
         $template = $this->getClassname().'/'.$this->getMethodName();
         return $this->twig->render($template, $params);

@@ -8,12 +8,12 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="{{ url('homepage') }}">Gesdon</a>
+                        <a class="navbar-brand" href="{{ url('homepage') }}">Gesdon ({{ current_database }})</a>
                     </div>
                     <div class="collapse navbar-collapse">
                         <ul class="nav navbar-nav">
-                            <li class="active"><a href="{{ url('dons') }}">Dons</a></li>
-                            <li><a href="{{ url('task') }}">Tâches</a></li>
+                            <li{% if '/taches' not in path(app.request.attributes.get('_route')) %} class="active"{% endif %}><a href="{{ url('dons') }}">Dons</a></li>
+                            <li{% if '/taches' in path(app.request.attributes.get('_route')) %} class="active"{% endif %}><a href="{{ url('task') }}">Tâches</a></li>
                         </ul>
                     </div>
                 </div>
