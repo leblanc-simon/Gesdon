@@ -44,6 +44,10 @@ $routing = array(
         'class' => 'TaskPaypal',
         'name' => 'task_paypal',
     ),
+    '/taches/evl' => array(
+        'class' => 'TaskEvl',
+        'name' => 'task_evl',
+    ),
     '/taches/cmcic' => array(
         'class' => 'TaskCmcic',
         'name' => 'task_cmcic',
