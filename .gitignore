@@ -9,6 +9,7 @@ data/evl.csv
 data/virements.csv
 data/img_pdf/signature.jpg
 data/pdf/*
+data/*.sql
 lib/model/classes/Gesdon/Database/map
 lib/model/classes/Gesdon/Database/om
 log/*
