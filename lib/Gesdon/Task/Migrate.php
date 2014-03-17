@@ -273,6 +273,17 @@ class Migrate extends BaseTask
           // On permute subscr_id et ident_paiement
           list($subscr_id, $ident_paiement) = array($ident_paiement, $subscr_id);
         }
+
+        // Création du don
+        $don = new Don();
+        $don->setIdentPaiement($ident_paiement);
+        $don->setMontant($montant);
+        $don->setVia('Paypal');
+        $don->setMoyenPaiement(DonPeer::CARTE_BANCAIRE);
+        $don->setStatutPaiement(DonPeer::STATUT_OK);
+        $don->setDatePaiement($date);
+        $don->setFrais(($frais < 0) ? $frais * -1 : $frais);
+        $don->save();
         
         // Création du donateur
         $donateur = DonateurQuery::create()->filterByIdentPaiement($ident_paiement)->findOneOrCreate();
@@ -288,17 +299,6 @@ class Migrate extends BaseTask
         }
         $donateur->setTypeDonateur(DonateurPeer::PARTICULIER);
         $donateur->save();
-        
-        // Création du don
-        $don = new Don();
-        $don->setIdentPaiement($ident_paiement);
-        $don->setMontant($montant);
-        $don->setVia('Paypal');
-        $don->setMoyenPaiement(DonPeer::CARTE_BANCAIRE);
-        $don->setStatutPaiement(DonPeer::STATUT_OK);
-        $don->setDatePaiement($date);
-        $don->setFrais(($frais < 0) ? $frais * -1 : $frais);
-        $don->save();
         
         // Création des infos supplémentaires
         $info = new PaypalInfo();
@@ -437,6 +437,17 @@ class Migrate extends BaseTask
         $date = preg_replace('/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})/', '\3-\2-\1', trim($datas[7]));
         $montant = \Gesdon\Utils\Currency::convertCurrency(trim($datas[6]));
         $ident_paiement = $prepend_ident.sha1(rand(0, 9999999).uniqid().microtime());
+
+        // Création du don
+        $don = new Don();
+        $don->setIdentPaiement($ident_paiement);
+        $don->setMontant($montant);
+        $don->setVia($moyen_paiement);
+        $don->setMoyenPaiement($moyen_paiement);
+        $don->setStatutPaiement(DonPeer::STATUT_OK);
+        $don->setDatePaiement($date);
+        $don->setFrais(0);
+        $don->save();
         
         $donateur = new Donateur();
         $donateur->setNom($nom);
@@ -450,17 +461,6 @@ class Migrate extends BaseTask
         $donateur->setDateCreation($date);
         $donateur->setTypeDonateur(DonateurPeer::PARTICULIER);
         $donateur->save();
-        
-        // Création du don
-        $don = new Don();
-        $don->setIdentPaiement($ident_paiement);
-        $don->setMontant($montant);
-        $don->setVia($moyen_paiement);
-        $don->setMoyenPaiement($moyen_paiement);
-        $don->setStatutPaiement(DonPeer::STATUT_OK);
-        $don->setDatePaiement($date);
-        $don->setFrais(0);
-        $don->save();
         
         $this->getConnection()->commit();
       } catch (\Exception $e) {
