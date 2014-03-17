@@ -19,7 +19,6 @@ class App
   
   static public function run()
   {
-    //throw new Exception('Rien à voir pour le moment');
     self::baseRun();
     
     $controller = new Controller();
