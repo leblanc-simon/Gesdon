@@ -42,10 +42,10 @@ class PropelMigration_1373366951
 # It "suspends judgement" for fkey relationships until are tables are set.
 SET FOREIGN_KEY_CHECKS = 0;
 
-ALTER TABLE `donateur` ADD CONSTRAINT `Rel_don_donateur`
-    FOREIGN KEY (`ident_paiement`)
-    REFERENCES `don` (`ident_paiement`)
-    ON DELETE SET NULL;
+#ALTER TABLE `donateur` ADD CONSTRAINT `Rel_don_donateur`
+#    FOREIGN KEY (`ident_paiement`)
+#    REFERENCES `don` (`ident_paiement`)
+#    ON DELETE SET NULL;
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
