@@ -39,7 +39,7 @@ class Don extends Main
         if ($form->isValid()) {
             $form = $form->getData();
 
-            $htis->don->setMontant($form['montant']);
+            $this->don->setMontant($form['montant']);
         }
         
         return $this->getApp()->redirect('dons');
@@ -57,8 +57,7 @@ class Don extends Main
                         ->add('nom', 'text', array(
                             'data' => $this->donateur->getNom(),
                             'required' => true,
-                            'label' => 'Nom',
-                            'class' => ''
+                            'label' => 'Nom'
                         ))
                         ->add('prenom', 'text', array(
                             'data' => $this->donateur->getPrenom(),
