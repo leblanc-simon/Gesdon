@@ -106,7 +106,7 @@ class SendSingleRecu extends BaseTask
    */
   private function generateRecuDb()
   {
-    $this->logSection(__METHOD__, 'begin');
+    $this->log('begin');
     
     $no_error = true;
     
