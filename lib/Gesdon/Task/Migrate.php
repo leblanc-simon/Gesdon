@@ -132,20 +132,20 @@ class Migrate extends BaseTask
         
         // Création du don (uniquement pour les dons simple : TPE == 0829374)
         if ($row['tpe'] == '0829374') {
-          $don = new Don();
-          $don->setIdentPaiement(trim($row['reference']));
-          $don->setMontant(\Gesdon\Utils\Currency::convertCurrency($row['montant']));
-          $don->setVia('TPE0829374');
+          $don = DonQuery::create()
+              ->filterByIdentPaiement(trim($row['reference']))
+              ->filterByMontant(\Gesdon\Utils\Currency::convertCurrency($row['montant']))
+              ->filterByVia('TPE0829374')
+              ->filterByDatePaiement($row['date'])
+              ->findOneOrCreate();
           $don->setMoyenPaiement(DonPeer::CARTE_BANCAIRE);
           $don->setStatutPaiement(DonPeer::STATUT_OK);
-          $don->setDatePaiement($row['date']);
           $don->setFrais(0);
           $don->save();
         }
         
         // Création des informations complémentaires
-        $info = new CmcicInfo();
-        $info->setDonateur($donateur);
+        $info = CmcicInfoQuery::create()->filterByDonateur($donateur)->findOneOrCreate();
         $info->setCvx($row['cvx']);
         $info->setValiditeCarte($row['vld']);
         $info->setBrand($row['brand']);
@@ -186,13 +186,15 @@ class Migrate extends BaseTask
     while ($datas = fgetcsv($handle, 1000, ',', '"')) {
       $this->log('Traitement de la ligne '.(++$i));
       try {
-        $don = new Don();
-        $don->setIdentPaiement($datas[1]);
-        $don->setMontant(\Gesdon\Utils\Currency::convertCurrency($datas[2]));
-        $don->setVia('TPE0829376');
+        $date_paiement = preg_replace('/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})/', '\3-\2-\1', $datas[0]);
+        $don = DonQuery::create()
+            ->filterByIdentPaiement($datas[1])
+            ->filterByVia('TPE0829376')
+            ->filterByDatePaiement($date_paiement)
+            ->filterByMontant(\Gesdon\Utils\Currency::convertCurrency($datas[2]))
+            ->findOneOrCreate();
         $don->setMoyenPaiement(DonPeer::CARTE_BANCAIRE);
         $don->setStatutPaiement(DonPeer::STATUT_OK);
-        $don->setDatePaiement(preg_replace('/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})/', '\3-\2-\1', $datas[0]));
         $don->setFrais(0);
         $don->save();
       } catch (\Exception $e) {
@@ -275,13 +277,14 @@ class Migrate extends BaseTask
         }
 
         // Création du don
-        $don = new Don();
-        $don->setIdentPaiement($ident_paiement);
-        $don->setMontant($montant);
-        $don->setVia('Paypal');
+        $don = DonQuery::create()
+            ->filterByIdentPaiement($ident_paiement)
+            ->filterByMontant($montant)
+            ->filterByVia('Paypal')
+            ->filterByDatePaiement($date)
+            ->findOneOrCreate();
         $don->setMoyenPaiement(DonPeer::CARTE_BANCAIRE);
         $don->setStatutPaiement(DonPeer::STATUT_OK);
-        $don->setDatePaiement($date);
         $don->setFrais(($frais < 0) ? $frais * -1 : $frais);
         $don->save();
         
