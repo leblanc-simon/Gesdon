@@ -24,7 +24,7 @@ $(document).ready(function(){
             return true;
         }
 
-        current_form = this;
+        current_form = $(this);
 
         if ($(this).find('input[type=submit]').hasClass('task-grouped')) {
             $('#delete-modal .modal-alert').html('<b>Attention, il s\'agit d\'une tâche groupée, l\'ensemble des tâches liées seront également supprimées</b>');
@@ -42,20 +42,21 @@ $(document).ready(function(){
     });
 
     $('#delete-modal button.btn-danger').on('click', function(){
-        current_form.submit();
-    });
+        var url = current_form.attr('action');
+        var method = current_form.attr('method');
+        var datas = current_form.serialize();
 
-    $('form[method=put], form[method=delete]').on('submit', function(){
-        var form = $(this);
+        current_form = null;
 
         $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: form.serialize(),
+            url: url,
+            method: method,
+            data: datas,
             dataType: 'html',
             statusCode: {
                 200: function(data, textStatus, jqXHR) {
                     console.log(data);
+                    window.location.href = url;
                 },
                 301: function(jqXHR, textStatus, errorThrown) {
                     console.log(jqXHR);
@@ -71,7 +72,5 @@ $(document).ready(function(){
                 }
             }
         });
-
-        return false;
     });
 });

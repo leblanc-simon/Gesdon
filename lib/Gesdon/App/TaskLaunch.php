@@ -45,7 +45,8 @@ class TaskLaunch extends Main
             $this->session->getFlashBag()->add('notice', 'Les tâches ont bien été supprimées');
         }
 
-        return $this->getApp()->redirect($this->url->generate('task_launch'));
+        //return $this->getApp()->redirect($this->url->generate('task_launch'));
+        return $this->getApp()->json(array('success' => true));
     }
 
 
