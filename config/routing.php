@@ -48,6 +48,10 @@ $routing = array(
         'class' => 'TaskEvl',
         'name' => 'task_evl',
     ),
+    '/taches/cheques' => array(
+        'class' => 'TaskCheck',
+        'name' => 'task_check',
+    ),
     '/taches/cmcic' => array(
         'class' => 'TaskCmcic',
         'name' => 'task_cmcic',
