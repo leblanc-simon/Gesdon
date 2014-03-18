@@ -44,7 +44,8 @@ class TaskCmcic extends Main
             TaskManagerPeer::add('migrate:build-recurrent', $params, $group_name, 0);
 
             // Add CMCIC CSV data in the database
-            TaskManagerPeer::add('migrate:data', array('--cmcic-recurrent' => true), $group_name, 1);
+            TaskManagerPeer::add('migrate:data', array('--cmcic' => true), $group_name, 1);
+            TaskManagerPeer::add('migrate:data', array('--cmcic-recurrent' => true), $group_name, 2);
 
             // Add success message
             $this->session->getFlashBag()->add('notice', 'L\'importation des données du Crédit Mutuel a été programmée.');
