@@ -1,23 +1,40 @@
 {% extends "Task.html.twig" %}
 
+{% block title %}Gesdon &bull; Envoi des reçus{% endblock %}
+
             {% block content %}
-                <form action="" method="post">
-                    <div class="row">
-                        <p>
-                            Pour quelle période souhaitez-vous envoyer les reçus ?
-                        </p>
+
+                <div class="page-header">
+                    <h1>Envoyer les reçus fiscaux</h1>
+                </div>
+                <div class="alert alert-info">
+                    <i class="glyphicon glyphicon-bullhorn"></i>
+                    Les reçus fiscaux seront envoyés pour les dons reçus de la date de début 00:00:00 jusqu'à la date de fin 23:59:59
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        Sélectionnez la période pour laquelle vous souhaitez envoyer les reçus fiscaux.
                     </div>
-                    <div class="row">
-                        <div class="span6">
-                            <label for="begin">Date de début</label>
-                            <input type="date" name="begin" value="{begin}" />
-                        </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="{{ url('task_recus') }}" method="post" role="form">
+                            <div class="form-group">
+                                <label for="begin">Date de début</label>
+                                <input type="date" name="begin" id="begin" value="{{ begin.format('Y-m-d') }}" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="end">Date de fin</label>
+                                <input type="date" name="end" id="end" value="{{ end.format('Y-m-d') }}" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" name="import" class="btn btn-success">
+                                    <i class="glyphicon glyphicon-send"></i>
+                                    Envoyer les reçus fiscaux
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="">
-                        <button type="submit" name="launch_send" class="btn">
-                            <i class=""></i>
-                            Envoyer les reçus
-                        </button>
-                    </div>
-                </form>
+                </div>
             {% endblock %}
